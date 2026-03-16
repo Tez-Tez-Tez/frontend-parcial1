@@ -1,13 +1,104 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>frontend-act2</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokedex - Pokémon</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="header-left">
+                <button id="menu-toggle" class="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <div class="header-logo-group">
+                    <div class="logo-box">📋</div>
+                    <div class="logo">PokéSPA</div>
+                </div>
+            </div>
+            <div class="header-center">
+                <div class="search-container">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" id="searchInput" class="search-input" placeholder="Busca pokémon, movimientos, habilidad...">
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="user-avatar">👤</div>
+            </div>
+        </div>
+    </header>
+
+    <nav id="menu" class="menu">
+        <div class="menu-section">
+            <h3 class="menu-title">NAVEGACIÓN</h3>
+            <button class="menu-nav-btn active" onclick="filterByAll()">Todos los Pokémons</button>
+            <button class="menu-nav-btn" onclick="filterByFavorites()">Favoritos</button>
+        </div>
+
+        <div class="menu-section">
+            <h3 class="menu-title">GENERACIÓN</h3>
+            <div class="menu-buttons">
+                <button class="gen-btn" onclick="filterByGen(1)">GEN 1</button>
+                <button class="gen-btn" onclick="filterByGen(2)">GEN 2</button>
+                <button class="gen-btn" onclick="filterByGen(3)">GEN 3</button>
+                <button class="gen-btn" onclick="filterByGen(4)">GEN 4</button>
+                <button class="gen-btn" onclick="filterByGen(5)">GEN 5</button>
+                <button class="gen-btn" onclick="filterByGen(6)">GEN 6</button>
+            </div>
+        </div>
+
+        <div class="menu-section">
+            <h3 class="menu-title">TIPOS</h3>
+            <div class="menu-buttons">
+                <button class="type-btn type-fire" onclick="filterByType('fire')">Fuego</button>
+                <button class="type-btn type-water" onclick="filterByType('water')">Agua</button>
+                <button class="type-btn type-grass" onclick="filterByType('grass')">Planta</button>
+                <button class="type-btn type-electric" onclick="filterByType('electric')">Eléctrico</button>
+                <button class="type-btn type-psychic" onclick="filterByType('psychic')">Psíquico</button>
+                <button class="type-btn type-fairy" onclick="filterByType('fairy')">Hada</button>
+                <button class="type-btn type-flying" onclick="filterByType('flying')">Aire</button>
+                <button class="type-btn type-ghost" onclick="filterByType('ghost')">Fantasma</button>
+                <button class="type-btn type-normal" onclick="filterByType('normal')">Normal</button>
+                <button class="type-btn type-poison" onclick="filterByType('poison')">Veneno</button>
+                <button class="type-btn type-dark" onclick="filterByType('dark')">Siniestro</button>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <div class="main-header">
+            <h1>Pokedex</h1>
+            <div class="filter-btn">🔽 Filter por 📊</div>
+        </div>
+
+        <div class="pokemon-grid" id="pokemonGrid">
+            <!-- Pokémon cards will be inserted here -->
+        </div>
+
+        <div class="pagination" id="pagination">
+            <!-- Pagination will be inserted here -->
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-left">
+            <div class="footer-logo">🔴 PokéSPA</div>
+            <p>Dentro el arte de la búsqueda. La mejor de datos más completa con actualizaciones, estrategias y secretos de legendarios.</p>
+        </div>
+        <div class="footer-right">
+            <h4>POKEDEX</h4>
+            <ul>
+                <li><a href="#">Por generación</a></li>
+                <li><a href="#">Por tipo</a></li>
+                <li><a href="#">Legendarios</a></li>
+            </ul>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
 </html>
