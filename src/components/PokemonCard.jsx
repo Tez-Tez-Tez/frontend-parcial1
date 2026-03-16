@@ -43,13 +43,13 @@ export function PokemonCard({ pokemon }) {
         <div className="pokemon-types">
           <h3>Types</h3>
           <div className="types-list">
-            {pokemon.types.map((type) => (
+            {pokemon.types.map((tipo) => (
               <span
-                key={type}
+                key={tipo.original}
                 className="type-badge"
-                style={{ backgroundColor: formatters.getTypeColor(type) }}
+                style={{ backgroundColor: formatters.getTypeColor(tipo.original) }}
               >
-                {formatters.formatName(type)}
+                {formatters.formatName(tipo.translated)}
               </span>
             ))}
           </div>

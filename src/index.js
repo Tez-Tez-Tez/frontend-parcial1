@@ -22,7 +22,7 @@ export { LoadingSpinner } from './components/LoadingSpinner.jsx'
 export { ErrorMessage } from './components/ErrorMessage.jsx'
 
 // Pages
-export { PokemonPage } from './pages/PokemonPage.jsx'
+export { PokemonPage } from './pages/DetallePokemon.jsx'
 
 // Hooks
 export { usePokemon } from './hooks/usePokemon.js'

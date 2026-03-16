@@ -52,3 +52,36 @@ export const formatters = {
     return colors[type?.toLowerCase()] || '#777777';
   },
 };
+
+// En tu archivo utils/formatters.js (o crea uno llamado translations.js)
+
+export const traducciones = {
+  tipos: {
+    normal: 'Normal',
+    fire: 'Fuego',
+    water: 'Agua',
+    electric: 'Eléctrico',
+    grass: 'Planta',
+    ice: 'Hielo',
+    fighting: 'Lucha',
+    poison: 'Veneno',
+    ground: 'Tierra',
+    flying: 'Volador',
+    psychic: 'Psíquico',
+    bug: 'Bicho',
+    rock: 'Roca',
+    ghost: 'Fantasma',
+    dragon: 'Dragón',
+    dark: 'Siniestro',
+    steel: 'Acero',
+    fairy: 'Hada'
+  },
+  stats: {
+    'hp': 'HP',
+    'attack': 'ATK',
+    'defense': 'DEF',
+    'special-attack': 'SPA',
+    'special-defense': 'SPD',
+    'speed': 'SPE'
+  }
+};
