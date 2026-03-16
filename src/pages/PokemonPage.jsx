@@ -13,7 +13,7 @@ import '../styles/PokemonPage.css';
 
 export function PokemonPage() {
   const [searchQuery, setSearchQuery] = useState('ditto');
-  const { pokemon, loading, error, refetch } = usePokemon(searchQuery);
+  const { pokemon, loading, error, refetch: _refetch } = usePokemon(searchQuery);
   const [showError, setShowError] = useState(!!error);
 
   const handleSearch = (query) => {

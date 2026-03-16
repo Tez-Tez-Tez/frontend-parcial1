@@ -3,6 +3,8 @@
  * Contexto de Autenticación para gestión global del usuario
  */
 
+/* eslint-disable react-refresh/only-export-components */
+
 import { createContext, useState, useCallback } from 'react';
 
 export const AuthContext = createContext();
