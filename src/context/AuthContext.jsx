@@ -1,53 +1,51 @@
-/**
- * AuthContext.jsx
- * Contexto de Autenticación para gestión global del usuario
- */
-
-import { createContext, useState, useCallback } from 'react';
+import { createContext, useCallback, useMemo, useState } from 'react';
 
 export const AuthContext = createContext();
 
-/**
- * AuthProvider
- * Proveedor de autenticación para toda la aplicación
- *
- * Proporciona:
- * - user: Datos del usuario autenticado o null
- * - isAuthenticated: Boolean indicando si hay sesión activa
- * - login: Función para iniciar sesión
- * - logout: Función para cerrar sesión
- * - isLoading: Estado de carga
- */
+function readUserFromStorage() {
+  try {
+    const storedUser = localStorage.getItem('user');
+    if (!storedUser) return null;
+    return JSON.parse(storedUser);
+  } catch (error) {
+    console.error('Error loading user from storage:', error);
+    localStorage.removeItem('user');
+    return null;
+  }
+}
+
+
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(() => readUserFromStorage());
   const [isLoading, setIsLoading] = useState(false);
 
-  /**
-   * Iniciar sesión (función mock - simula autenticación)
-   */
-  const login = useCallback(async (email, password) => {
+
+  const login = useCallback(async (username, password) => {
     setIsLoading(true);
     try {
-      // Simular delay de API
+
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      // Validación básica
-      if (!email || !password) {
-        throw new Error('Email y contraseña son requeridos');
+      if (!username || !password) {
+        throw new Error('Usuario y contraseña son requeridos');
       }
 
-      // Simular usuario autenticado
+      const safeName = String(username).trim();
+
+
       const userData = {
         id: '1',
-        email,
-        name: email.split('@')[0],
-        avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(email.split('@')[0])}&background=667eea&color=fff`,
+        email: safeName,
+        name: safeName.includes('@') ? safeName.split('@')[0] : safeName,
+        avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(
+          safeName.includes('@') ? safeName.split('@')[0] : safeName
+        )}&background=667eea&color=fff`,
         role: 'user',
-        loginTime: new Date(),
+        loginTime: new Date().toISOString(),
       };
 
       setUser(userData);
-      // Guardar en localStorage para persistencia
+
       localStorage.setItem('user', JSON.stringify(userData));
 
       return userData;
@@ -59,37 +57,25 @@ export function AuthProvider({ children }) {
     }
   }, []);
 
-  /**
-   * Cerrar sesión
-   */
+ 
   const logout = useCallback(() => {
     setUser(null);
     localStorage.removeItem('user');
   }, []);
 
-  /**
-   * Cargar usuario desde localStorage (persist)
-   */
+
   const loadUserFromStorage = useCallback(() => {
-    try {
-      const storedUser = localStorage.getItem('user');
-      if (storedUser) {
-        setUser(JSON.parse(storedUser));
-      }
-    } catch (error) {
-      console.error('Error loading user from storage:', error);
-      localStorage.removeItem('user');
-    }
+    setUser(readUserFromStorage());
   }, []);
 
-  const value = {
+  const value = useMemo(() => ({
     user,
     isAuthenticated: !!user,
     isLoading,
     login,
     logout,
     loadUserFromStorage,
-  };
+  }), [user, isLoading, login, logout, loadUserFromStorage]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

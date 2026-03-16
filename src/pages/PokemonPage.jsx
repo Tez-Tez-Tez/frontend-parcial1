@@ -1,8 +1,3 @@
-/**
- * Página: PokemonPage
- * Página principal para buscar y ver Pokémon
- */
-
 import { useState } from 'react';
 import { usePokemon } from '../hooks/usePokemon.js';
 import { PokemonSearch } from '../components/PokemonSearch.jsx';
@@ -13,7 +8,7 @@ import '../styles/PokemonPage.css';
 
 export function PokemonPage() {
   const [searchQuery, setSearchQuery] = useState('ditto');
-  const { pokemon, loading, error, refetch } = usePokemon(searchQuery);
+  const { pokemon, loading, error } = usePokemon(searchQuery);
   const [showError, setShowError] = useState(!!error);
 
   const handleSearch = (query) => {
