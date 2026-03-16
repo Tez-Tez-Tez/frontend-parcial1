@@ -11,4 +11,7 @@ export const API_CONFIG = {
 export const API_ENDPOINTS = {
   POKEMON: (name) => `/pokemon/${name}`,
   POKEMON_SPECIES: (id) => `/pokemon-species/${id}`,
+  EVOLUTION_CHAIN: (id) => `/evolution-chain/${id}`,
+  ABILITY: (name) => `/ability/${name}`,
+  ENCOUNTERS: (id) => `/pokemon/${id}/encounters`,
 };
