@@ -47,33 +47,21 @@ export function AuthProvider({ children }) {
     setIsLoading(true);
     try {
       // Simular delay de API
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 600));
 
       // Validación básica
       if (!identifier || !password) {
         throw new Error('Usuario y contraseña son requeridos');
       }
 
-      const users = getStoredUsers();
-      const matchedUser = users.find(
-        (u) =>
-          u.username?.toLowerCase() === String(identifier).toLowerCase() ||
-          (u.email && u.email.toLowerCase() === String(identifier).toLowerCase())
-      );
-
-      if (users.length > 0) {
-        if (!matchedUser || matchedUser.password !== password) {
-          throw new Error('Credenciales inválidas');
-        }
-      }
-
-      // Simular usuario autenticado
-      const displayName = matchedUser?.username || String(identifier);
-      const email = matchedUser?.email || String(identifier);
+      // Simulación simple: no valida contra una base de datos.
+      // (Persistimos sesión para demo.)
+      const displayName = String(identifier);
+      const email = String(identifier);
       const userData = {
-        id: matchedUser?.id || '1',
+        id: '1',
         email,
-        username: matchedUser?.username || String(identifier),
+        username: String(identifier),
         name: displayName,
         avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=ff6b6b&color=fff`,
         role: 'user',
@@ -91,7 +79,7 @@ export function AuthProvider({ children }) {
     } finally {
       setIsLoading(false);
     }
-  }, [getStoredUsers]);
+  }, []);
 
   /**
    * Registro (función mock - simula creación de usuario)
@@ -100,7 +88,7 @@ export function AuthProvider({ children }) {
     async ({ username, email, password }) => {
       setIsLoading(true);
       try {
-        await new Promise((resolve) => setTimeout(resolve, 900));
+        await new Promise((resolve) => setTimeout(resolve, 650));
 
         if (!username || !password) {
           throw new Error('Usuario y contraseña son requeridos');
@@ -109,15 +97,8 @@ export function AuthProvider({ children }) {
         const normalizedUsername = String(username).trim();
         const normalizedEmail = email ? String(email).trim() : '';
 
+        // Persistencia simple para demo (sin reglas de unicidad ni seguridad).
         const users = getStoredUsers();
-        const exists = users.some(
-          (u) =>
-            u.username?.toLowerCase() === normalizedUsername.toLowerCase() ||
-            (normalizedEmail && u.email?.toLowerCase() === normalizedEmail.toLowerCase())
-        );
-        if (exists) {
-          throw new Error('Ese usuario/email ya existe');
-        }
 
         const newUser = {
           id: String(Date.now()),

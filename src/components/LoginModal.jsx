@@ -3,12 +3,18 @@
  * Modal de login simple para demostración
  */
 
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAuth } from '../hooks/useAuth.js';
 import '../styles/LoginModal.css';
+
+const authSchema = z.object({
+  username: z.string().min(1, 'El usuario es requerido'),
+  email: z.string().optional(),
+  password: z.string().min(1, 'La contraseña es requerida'),
+});
 
 export function LoginModal({ isOpen, onClose, variant = 'modal' }) {
   const { login, register: registerUser, isLoading } = useAuth();
@@ -16,54 +22,14 @@ export function LoginModal({ isOpen, onClose, variant = 'modal' }) {
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
-  const loginSchema = useMemo(
-    () =>
-      z.object({
-        username: z.string().min(1, 'El usuario es requerido'),
-        password: z.string().min(1, 'La contraseña es requerida'),
-      }),
-    []
-  );
-
-  const registerSchema = useMemo(
-    () =>
-      z
-        .object({
-          username: z
-            .string()
-            .min(3, 'El usuario debe tener al menos 3 caracteres')
-            .max(30, 'El usuario no puede superar 30 caracteres'),
-          email: z
-            .string()
-            .trim()
-            .optional()
-            .or(z.literal(''))
-            .refine((v) => !v || z.string().email().safeParse(v).success, {
-              message: 'Email inválido',
-            }),
-          password: z.string().min(6, 'La contraseña debe tener al menos 6 caracteres'),
-          confirmPassword: z.string().min(1, 'Confirma tu contraseña'),
-        })
-        .refine((data) => data.password === data.confirmPassword, {
-          path: ['confirmPassword'],
-          message: 'Las contraseñas no coinciden',
-        }),
-    []
-  );
-
-  const schema = mode === 'register' ? registerSchema : loginSchema;
-
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors, isSubmitting },
   } = useForm({
-    resolver: zodResolver(schema),
-    defaultValues:
-      mode === 'register'
-        ? { username: '', email: '', password: '', confirmPassword: '' }
-        : { username: '', password: '' },
+    resolver: zodResolver(authSchema),
+    defaultValues: { username: '', email: '', password: '' },
     mode: 'onBlur',
   });
 
@@ -97,11 +63,7 @@ export function LoginModal({ isOpen, onClose, variant = 'modal' }) {
     setError('');
     setShowPassword(false);
     setMode(nextMode);
-    if (nextMode === 'register') {
-      reset({ username: '', email: '', password: '', confirmPassword: '' });
-    } else {
-      reset({ username: '', password: '' });
-    }
+    reset({ username: '', email: '', password: '' });
   };
 
   if (variant === 'modal' && !isOpen) return null;
@@ -279,38 +241,6 @@ export function LoginModal({ isOpen, onClose, variant = 'modal' }) {
                   </div>
                 )}
               </div>
-
-              {mode === 'register' && (
-                <div className="login-field">
-                  <label htmlFor="login-confirm" className="login-label">
-                    Confirmar contraseña
-                  </label>
-                  <div className="input-with-icon">
-                    <span className="input-icon" aria-hidden="true">
-                      <svg viewBox="0 0 24 24" width="16" height="16" focusable="false" aria-hidden="true">
-                        <path
-                          d="M17 8h-1V6a4 4 0 0 0-8 0v2H7a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2ZM10 6a2 2 0 0 1 4 0v2h-4V6Z"
-                          fill="currentColor"
-                        />
-                      </svg>
-                    </span>
-                    <input
-                      type={showPassword ? 'text' : 'password'}
-                      id="login-confirm"
-                      className="login-input"
-                      placeholder="••••••••"
-                      disabled={busy}
-                      {...register('confirmPassword')}
-                      autoComplete="new-password"
-                    />
-                  </div>
-                  {errors.confirmPassword?.message && (
-                    <div className="field-error" role="alert">
-                      {errors.confirmPassword.message}
-                    </div>
-                  )}
-                </div>
-              )}
 
               <button type="submit" className="login-submit" disabled={busy}>
                 {busy ? 'Cargando...' : mode === 'register' ? 'Registrarse' : 'Iniciar Sesión'}
