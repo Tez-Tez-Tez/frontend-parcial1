@@ -24,26 +24,58 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
+  const USERS_KEY = 'users';
+
+  const getStoredUsers = useCallback(() => {
+    try {
+      const raw = localStorage.getItem(USERS_KEY);
+      return raw ? JSON.parse(raw) : [];
+    } catch {
+      localStorage.removeItem(USERS_KEY);
+      return [];
+    }
+  }, []);
+
+  const setStoredUsers = useCallback((users) => {
+    localStorage.setItem(USERS_KEY, JSON.stringify(users));
+  }, []);
+
   /**
    * Iniciar sesión (función mock - simula autenticación)
    */
-  const login = useCallback(async (email, password) => {
+  const login = useCallback(async (identifier, password) => {
     setIsLoading(true);
     try {
       // Simular delay de API
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
       // Validación básica
-      if (!email || !password) {
-        throw new Error('Email y contraseña son requeridos');
+      if (!identifier || !password) {
+        throw new Error('Usuario y contraseña son requeridos');
+      }
+
+      const users = getStoredUsers();
+      const matchedUser = users.find(
+        (u) =>
+          u.username?.toLowerCase() === String(identifier).toLowerCase() ||
+          (u.email && u.email.toLowerCase() === String(identifier).toLowerCase())
+      );
+
+      if (users.length > 0) {
+        if (!matchedUser || matchedUser.password !== password) {
+          throw new Error('Credenciales inválidas');
+        }
       }
 
       // Simular usuario autenticado
+      const displayName = matchedUser?.username || String(identifier);
+      const email = matchedUser?.email || String(identifier);
       const userData = {
-        id: '1',
+        id: matchedUser?.id || '1',
         email,
-        name: email.split('@')[0],
-        avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(email.split('@')[0])}&background=667eea&color=fff`,
+        username: matchedUser?.username || String(identifier),
+        name: displayName,
+        avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=ff6b6b&color=fff`,
         role: 'user',
         loginTime: new Date(),
       };
@@ -59,7 +91,67 @@ export function AuthProvider({ children }) {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [getStoredUsers]);
+
+  /**
+   * Registro (función mock - simula creación de usuario)
+   */
+  const register = useCallback(
+    async ({ username, email, password }) => {
+      setIsLoading(true);
+      try {
+        await new Promise((resolve) => setTimeout(resolve, 900));
+
+        if (!username || !password) {
+          throw new Error('Usuario y contraseña son requeridos');
+        }
+
+        const normalizedUsername = String(username).trim();
+        const normalizedEmail = email ? String(email).trim() : '';
+
+        const users = getStoredUsers();
+        const exists = users.some(
+          (u) =>
+            u.username?.toLowerCase() === normalizedUsername.toLowerCase() ||
+            (normalizedEmail && u.email?.toLowerCase() === normalizedEmail.toLowerCase())
+        );
+        if (exists) {
+          throw new Error('Ese usuario/email ya existe');
+        }
+
+        const newUser = {
+          id: String(Date.now()),
+          username: normalizedUsername,
+          email: normalizedEmail,
+          password,
+          createdAt: new Date(),
+        };
+
+        setStoredUsers([...users, newUser]);
+
+        const userData = {
+          id: newUser.id,
+          email: newUser.email || newUser.username,
+          username: newUser.username,
+          name: newUser.username,
+          avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(newUser.username)}&background=ff6b6b&color=fff`,
+          role: 'user',
+          loginTime: new Date(),
+        };
+
+        setUser(userData);
+        localStorage.setItem('user', JSON.stringify(userData));
+
+        return userData;
+      } catch (error) {
+        console.error('Register error:', error.message);
+        throw error;
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [getStoredUsers, setStoredUsers]
+  );
 
   /**
    * Cerrar sesión
@@ -89,6 +181,7 @@ export function AuthProvider({ children }) {
     isAuthenticated: !!user,
     isLoading,
     login,
+    register,
     logout,
     loadUserFromStorage,
   };

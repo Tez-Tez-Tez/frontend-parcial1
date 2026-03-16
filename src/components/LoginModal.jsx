@@ -3,28 +3,104 @@
  * Modal de login simple para demostración
  */
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useAuth } from '../hooks/useAuth.js';
 import '../styles/LoginModal.css';
 
 export function LoginModal({ isOpen, onClose, variant = 'modal' }) {
-  const { login, isLoading } = useAuth();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const { login, register: registerUser, isLoading } = useAuth();
+  const [mode, setMode] = useState('login');
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const loginSchema = useMemo(
+    () =>
+      z.object({
+        username: z.string().min(1, 'El usuario es requerido'),
+        password: z.string().min(1, 'La contraseña es requerida'),
+      }),
+    []
+  );
+
+  const registerSchema = useMemo(
+    () =>
+      z
+        .object({
+          username: z
+            .string()
+            .min(3, 'El usuario debe tener al menos 3 caracteres')
+            .max(30, 'El usuario no puede superar 30 caracteres'),
+          email: z
+            .string()
+            .trim()
+            .optional()
+            .or(z.literal(''))
+            .refine((v) => !v || z.string().email().safeParse(v).success, {
+              message: 'Email inválido',
+            }),
+          password: z.string().min(6, 'La contraseña debe tener al menos 6 caracteres'),
+          confirmPassword: z.string().min(1, 'Confirma tu contraseña'),
+        })
+        .refine((data) => data.password === data.confirmPassword, {
+          path: ['confirmPassword'],
+          message: 'Las contraseñas no coinciden',
+        }),
+    []
+  );
+
+  const schema = mode === 'register' ? registerSchema : loginSchema;
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm({
+    resolver: zodResolver(schema),
+    defaultValues:
+      mode === 'register'
+        ? { username: '', email: '', password: '', confirmPassword: '' }
+        : { username: '', password: '' },
+    mode: 'onBlur',
+  });
+
+  const busy = isLoading || isSubmitting;
+
+  const onSubmit = async (data) => {
     setError('');
 
     try {
-      await login(email, password);
-      if (variant === 'modal') onClose?.();
-      setEmail('');
-      setPassword('');
+      if (mode === 'register') {
+        await registerUser({
+          username: data.username,
+          email: data.email,
+          password: data.password,
+        });
+      } else {
+        await login(data.username, data.password);
+      }
+
+      reset();
+
+      if (variant === 'modal') {
+        onClose?.();
+      }
     } catch (err) {
       setError(err.message);
+    }
+  };
+
+  const switchMode = (nextMode) => {
+    setError('');
+    setShowPassword(false);
+    setMode(nextMode);
+    if (nextMode === 'register') {
+      reset({ username: '', email: '', password: '', confirmPassword: '' });
+    } else {
+      reset({ username: '', password: '' });
     }
   };
 
@@ -69,12 +145,18 @@ export function LoginModal({ isOpen, onClose, variant = 'modal' }) {
               </svg>
             </div>
 
-            <h1 className="login-title">Entrenadores Login</h1>
-            <p className="login-subtitle">Introduzca sus credenciales para acceder a su sistema informatico.</p>
+            <h1 className="login-title">
+              {mode === 'register' ? 'Registro de Entrenador' : 'Entrenadores Login'}
+            </h1>
+            <p className="login-subtitle">
+              {mode === 'register'
+                ? 'Crea tu cuenta para acceder al sistema.'
+                : 'Introduzca sus credenciales para acceder a su sistema informatico.'}
+            </p>
 
             {error && <div className="login-error">{error}</div>}
 
-            <form onSubmit={handleSubmit} className="login-form login-form--page">
+            <form onSubmit={handleSubmit(onSubmit)} className="login-form login-form--page">
               <div className="login-field">
                 <label htmlFor="login-user" className="login-label">
                   Usuario
@@ -93,14 +175,49 @@ export function LoginModal({ isOpen, onClose, variant = 'modal' }) {
                     id="login-user"
                     className="login-input"
                     placeholder="Nombre"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    disabled={isLoading}
-                    required
+                    disabled={busy}
+                    {...register('username')}
                     autoComplete="username"
                   />
                 </div>
+                {errors.username?.message && (
+                  <div className="field-error" role="alert">
+                    {errors.username.message}
+                  </div>
+                )}
               </div>
+
+              {mode === 'register' && (
+                <div className="login-field">
+                  <label htmlFor="login-email" className="login-label">
+                    Email
+                  </label>
+                  <div className="input-with-icon">
+                    <span className="input-icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" width="16" height="16" focusable="false" aria-hidden="true">
+                        <path
+                          d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2Zm0 4-8 5-8-5V6l8 5 8-5Z"
+                          fill="currentColor"
+                        />
+                      </svg>
+                    </span>
+                    <input
+                      type="email"
+                      id="login-email"
+                      className="login-input"
+                      placeholder="tu@email.com"
+                      disabled={busy}
+                      {...register('email')}
+                      autoComplete="email"
+                    />
+                  </div>
+                  {errors.email?.message && (
+                    <div className="field-error" role="alert">
+                      {errors.email.message}
+                    </div>
+                  )}
+                </div>
+              )}
 
               <div className="login-field">
                 <label htmlFor="login-password" className="login-label">
@@ -120,10 +237,8 @@ export function LoginModal({ isOpen, onClose, variant = 'modal' }) {
                     id="login-password"
                     className="login-input"
                     placeholder="••••••••"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    disabled={isLoading}
-                    required
+                    disabled={busy}
+                    {...register('password')}
                     autoComplete="current-password"
                   />
                   <button
@@ -132,7 +247,7 @@ export function LoginModal({ isOpen, onClose, variant = 'modal' }) {
                     onClick={() => setShowPassword((v) => !v)}
                     aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
                     title={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
-                    disabled={isLoading}
+                    disabled={busy}
                   >
                     <svg viewBox="0 0 24 24" width="18" height="18" focusable="false" aria-hidden="true">
                       {showPassword ? (
@@ -150,23 +265,88 @@ export function LoginModal({ isOpen, onClose, variant = 'modal' }) {
                   </button>
                 </div>
 
-                <div className="forgot-row">
-                  <a className="forgot-link" href="#" onClick={(e) => e.preventDefault()}>
-                    ¿Has olvidado tu contraseña?
-                  </a>
-                </div>
+                {errors.password?.message && (
+                  <div className="field-error" role="alert">
+                    {errors.password.message}
+                  </div>
+                )}
+
+                {mode === 'login' && (
+                  <div className="forgot-row">
+                    <a className="forgot-link" href="#" onClick={(e) => e.preventDefault()}>
+                      ¿Has olvidado tu contraseña?
+                    </a>
+                  </div>
+                )}
               </div>
 
-              <button type="submit" className="login-submit" disabled={isLoading}>
-                {isLoading ? 'Cargando...' : 'Iniciar Sesión'}
+              {mode === 'register' && (
+                <div className="login-field">
+                  <label htmlFor="login-confirm" className="login-label">
+                    Confirmar contraseña
+                  </label>
+                  <div className="input-with-icon">
+                    <span className="input-icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" width="16" height="16" focusable="false" aria-hidden="true">
+                        <path
+                          d="M17 8h-1V6a4 4 0 0 0-8 0v2H7a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2ZM10 6a2 2 0 0 1 4 0v2h-4V6Z"
+                          fill="currentColor"
+                        />
+                      </svg>
+                    </span>
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      id="login-confirm"
+                      className="login-input"
+                      placeholder="••••••••"
+                      disabled={busy}
+                      {...register('confirmPassword')}
+                      autoComplete="new-password"
+                    />
+                  </div>
+                  {errors.confirmPassword?.message && (
+                    <div className="field-error" role="alert">
+                      {errors.confirmPassword.message}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              <button type="submit" className="login-submit" disabled={busy}>
+                {busy ? 'Cargando...' : mode === 'register' ? 'Registrarse' : 'Iniciar Sesión'}
               </button>
             </form>
 
             <div className="login-bottom">
-              <span>¿No tienes una cuenta?</span>
-              <a className="login-register-link" href="#" onClick={(e) => e.preventDefault()}>
-                Registrarse como nuevo entrenador
-              </a>
+              {mode === 'register' ? (
+                <>
+                  <span>¿Ya tienes cuenta?</span>
+                  <a
+                    className="login-register-link"
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      switchMode('login');
+                    }}
+                  >
+                    Volver a iniciar sesión
+                  </a>
+                </>
+              ) : (
+                <>
+                  <span>¿No tienes una cuenta?</span>
+                  <a
+                    className="login-register-link"
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      switchMode('register');
+                    }}
+                  >
+                    Registrarse como nuevo entrenador
+                  </a>
+                </>
+              )}
             </div>
 
             <div className="login-footer">
@@ -203,21 +383,24 @@ export function LoginModal({ isOpen, onClose, variant = 'modal' }) {
 
         {error && <div className="modal-error">{error}</div>}
 
-        <form onSubmit={handleSubmit} className="login-form">
+        <form onSubmit={handleSubmit(onSubmit)} className="login-form">
           <div className="form-group">
             <label htmlFor="email" className="form-label">
-              Email
+              Usuario
             </label>
             <input
               type="text"
               id="email"
               className="form-input"
-              placeholder="tu@email.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              disabled={isLoading}
-              required
+              placeholder="Nombre"
+              disabled={busy}
+              {...register('username')}
             />
+            {errors.username?.message && (
+              <div className="field-error" role="alert">
+                {errors.username.message}
+              </div>
+            )}
           </div>
 
           <div className="form-group">
@@ -229,15 +412,18 @@ export function LoginModal({ isOpen, onClose, variant = 'modal' }) {
               id="password"
               className="form-input"
               placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              disabled={isLoading}
-              required
+              disabled={busy}
+              {...register('password')}
             />
+            {errors.password?.message && (
+              <div className="field-error" role="alert">
+                {errors.password.message}
+              </div>
+            )}
           </div>
 
-          <button type="submit" className="form-button" disabled={isLoading}>
-            {isLoading ? 'Cargando...' : 'Inicia Sesión'}
+          <button type="submit" className="form-button" disabled={busy}>
+            {busy ? 'Cargando...' : 'Inicia Sesión'}
           </button>
         </form>
 
