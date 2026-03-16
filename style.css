@@ -277,7 +277,7 @@ header {
 .type-btn:hover {
     opacity: 0.8;
     transform: translateY(-2px);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 main {
@@ -457,24 +457,77 @@ main {
 }
 
 /* Type Colors */
-.type-fire { background: #F08030; }
-.type-water { background: #6890F0; }
-.type-grass { background: #78C850; }
-.type-electric { background: #F8D030; }
-.type-ice { background: #98D8D8; }
-.type-fighting { background: #C03028; }
-.type-poison { background: #A040A0; }
-.type-ground { background: #E0C068; }
-.type-flying { background: #A890F0; }
-.type-psychic { background: #F85888; }
-.type-bug { background: #A8B820; }
-.type-rock { background: #B8A038; }
-.type-ghost { background: #705898; }
-.type-dragon { background: #7038F8; }
-.type-dark { background: #705848; }
-.type-steel { background: #B8B8D0; }
-.type-fairy { background: #EE99AC; }
-.type-normal { background: #A8A878; }
+.type-fire {
+    background: #F08030;
+}
+
+.type-water {
+    background: #6890F0;
+}
+
+.type-grass {
+    background: #78C850;
+}
+
+.type-electric {
+    background: #F8D030;
+}
+
+.type-ice {
+    background: #98D8D8;
+}
+
+.type-fighting {
+    background: #C03028;
+}
+
+.type-poison {
+    background: #A040A0;
+}
+
+.type-ground {
+    background: #E0C068;
+}
+
+.type-flying {
+    background: #A890F0;
+}
+
+.type-psychic {
+    background: #F85888;
+}
+
+.type-bug {
+    background: #A8B820;
+}
+
+.type-rock {
+    background: #B8A038;
+}
+
+.type-ghost {
+    background: #705898;
+}
+
+.type-dragon {
+    background: #7038F8;
+}
+
+.type-dark {
+    background: #705848;
+}
+
+.type-steel {
+    background: #B8B8D0;
+}
+
+.type-fairy {
+    background: #EE99AC;
+}
+
+.type-normal {
+    background: #A8A878;
+}
 
 .pokemon-stats {
     display: flex;
@@ -693,11 +746,11 @@ footer {
         grid-template-columns: repeat(2, 1fr);
         gap: 24px;
     }
-    
+
     main {
         padding: 24px 24px;
     }
-    
+
     header {
         padding: 12px 24px;
     }
@@ -708,19 +761,19 @@ footer {
         grid-template-columns: repeat(1, 1fr);
         gap: 16px;
     }
-    
+
     main {
         padding: 16px 16px;
     }
-    
+
     header {
         padding: 12px 16px;
     }
-    
+
     .search-container {
         max-width: 100%;
     }
-    
+
     .footer-content {
         flex-direction: column;
     }
@@ -730,17 +783,17 @@ footer {
     .pokemon-grid {
         grid-template-columns: repeat(1, 1fr);
     }
-    
+
     .main-header h1 {
         font-size: 24px;
         line-height: 32px;
     }
-    
+
     .main-header {
         flex-direction: column;
         align-items: stretch;
     }
-    
+
     .filter-btn {
         width: 100%;
     }

@@ -1,19 +1,3 @@
-/**
- * Index Principal
- * Punto de entrada para la aplicación
- * 
- * Estructura:
- * - components/   → Componentes reutilizables
- * - pages/        → Páginas principales de la app
- * - hooks/        → Hooks personalizados
- * - services/     → Servicios de API y lógica business
- * - context/      → Contextos globales (AuthContext, etc)
- * - utils/        → Funciones utilitarias
- * - constants/    → Constantes y configuración
- * - styles/       → Estilos CSS globales
- */
-
-// Components
 export { Navbar } from './components/Navbar.jsx'
 export { LoginModal } from './components/LoginModal.jsx'
 export { PokemonCard } from './components/PokemonCard.jsx'
