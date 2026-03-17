@@ -10,11 +10,15 @@ import './App.css'
 function AppContent() {
   const { isAuthenticated } = useAuth()
   const { page } = useNav()
+  
+  // Determinar si debemos mostrar el navbar
+  const showNavbar = isAuthenticated && page !== 'perfil'
 
   return (
     <div className="app">
-      <Navbar />
-      <main className="app-main">
+      {showNavbar && <Navbar />}
+      
+      <main className={`app-main ${!showNavbar ? 'no-navbar' : ''}`}>
         {!isAuthenticated ? (
           <LoginPage />
         ) : page === 'perfil' ? (
