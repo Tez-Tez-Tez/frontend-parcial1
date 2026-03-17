@@ -11,86 +11,66 @@ export function PokemonCard({ pokemon }) {
     return <div className="pokemon-card empty">No Pokémon selected</div>;
   }
 
+  const imageSrc =
+    pokemon.image ||
+    'https://via.placeholder.com/300?text=No+Image';
+
+  const hp = pokemon.stats?.find((s) => s.name === 'HP')?.value;
+  const atk = pokemon.stats?.find((s) => s.name === 'ATK')?.value;
+  const def = pokemon.stats?.find((s) => s.name === 'DEF')?.value;
+
   return (
-    <div className="pokemon-card">
-      <div className="pokemon-header">
+    <article className="pokemon-card" aria-label={pokemon.name}>
+      {/* Botón de favorito y ID */}
+      <span className="pokemon-id">#{String(pokemon.id).padStart(4, '0')}</span>
+      <button className="favorite-btn" aria-label="Añadir a favoritos">
+        ♡
+      </button>
+
+      {/* Imagen */}
+      <div className="pokemon-image-container">
         <img
-          src={pokemon.image}
+          src={imageSrc}
           alt={pokemon.name}
           className="pokemon-image"
+          loading="lazy"
           onError={(e) => {
-            e.target.src = 'https://via.placeholder.com/300?text=No+Image';
+            e.currentTarget.src = 'https://via.placeholder.com/300?text=No+Image';
           }}
         />
-        <div className="pokemon-title">
-          <h2>{formatters.formatName(pokemon.name)}</h2>
-          <p className="pokemon-id">#{String(pokemon.id).padStart(3, '0')}</p>
-        </div>
       </div>
 
-      <div className="pokemon-info">
-        <div className="info-item">
-          <span className="label">Height:</span>
-          <span className="value">{formatters.formatNumber(pokemon.height)} m</span>
+      {/* Nombre y Tipos */}
+      <h3 className="pokemon-name">{formatters.formatName(pokemon.name)}</h3>
+
+      {pokemon.types?.length > 0 && (
+        <div className="pokemon-types" aria-label="Tipos">
+          {pokemon.types.map((tipo) => (
+            <span
+              key={tipo.original}
+              className={`type-badge type-${tipo.original.toLowerCase()}`}
+            >
+              {tipo.translated.toUpperCase()}
+            </span>
+          ))}
         </div>
-        <div className="info-item">
-          <span className="label">Weight:</span>
-          <span className="value">{formatters.formatNumber(pokemon.weight)} kg</span>
+      )}
+
+      {/* Estadísticas */}
+      <div className="pokemon-stats" aria-label="Stats">
+        <div className="stat">
+          <span className="stat-label">HP</span>
+          <span className="stat-value">{hp ?? '-'}</span>
+        </div>
+        <div className="stat">
+          <span className="stat-label">ATK</span>
+          <span className="stat-value">{atk ?? '-'}</span>
+        </div>
+        <div className="stat">
+          <span className="stat-label">DEF</span>
+          <span className="stat-value">{def ?? '-'}</span>
         </div>
       </div>
-
-      {pokemon.types.length > 0 && (
-        <div className="pokemon-types">
-          <h3>Types</h3>
-          <div className="types-list">
-            {pokemon.types.map((tipo) => (
-              <span
-                key={tipo.original}
-                className="type-badge"
-                style={{ backgroundColor: formatters.getTypeColor(tipo.original) }}
-              >
-                {formatters.formatName(tipo.translated)}
-              </span>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {pokemon.abilities.length > 0 && (
-        <div className="pokemon-abilities">
-          <h3>Abilities</h3>
-          <ul>
-            {pokemon.abilities.map((ability) => (
-              <li key={ability.name}>
-                {formatters.formatName(ability.name)}
-                {ability.isHidden && <span className="hidden-badge">Hidden</span>}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      {pokemon.stats.length > 0 && (
-        <div className="pokemon-stats">
-          <h3>Stats</h3>
-          <div className="stats-list">
-            {pokemon.stats.map((stat) => (
-              <div key={stat.name} className="stat-item">
-                <span className="stat-name">{formatters.formatName(stat.name)}</span>
-                <div className="stat-bar">
-                  <div
-                    className="stat-fill"
-                    style={{
-                      width: `${Math.min((stat.value / 150) * 100, 100)}%`,
-                    }}
-                  />
-                </div>
-                <span className="stat-value">{stat.value}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-    </div>
+    </article>
   );
 }

@@ -8,6 +8,11 @@ import { API_ENDPOINTS, API_CONFIG } from '../constants/api.js';
 import { traducciones } from '../utils/formatters.js'; // Ajusta la ruta según tu proyecto
 
 class PokemonService {
+  constructor() {
+    this._basicCache = new Map();
+    this._generationCache = new Map();
+  }
+
   /**
    * Obtiene información detallada de un Pokémon
    * @param {string} nameOrId - Nombre o ID del Pokémon
@@ -40,6 +45,60 @@ class PokemonService {
   }
 
   /**
+   * Obtiene información básica de un Pokémon (rápido) para listados.
+   * Usa únicamente el endpoint `/pokemon/{nameOrId}`.
+   * @param {string|number} nameOrId
+   */
+  async getPokemonBasic(nameOrId) {
+    if (!nameOrId && nameOrId !== 0) {
+      throw new Error('Name or ID is required');
+    }
+
+    const key = String(nameOrId).toLowerCase();
+    const cached = this._basicCache.get(key);
+    if (cached) return cached;
+
+    try {
+      const endpoint = API_ENDPOINTS.POKEMON(key);
+      const data = await apiClient.get(endpoint);
+      const normalized = this._normalizeBasicData(data);
+      this._basicCache.set(key, normalized);
+      return normalized;
+    } catch (error) {
+      throw new Error(`Failed to fetch Pokemon: ${error.message}`);
+    }
+  }
+
+  /**
+   * Obtiene una lista de Pokémon desde la PokeAPI, trayendo especies por generación.
+   * Nota: se limita la cantidad por generación para evitar demasiadas peticiones.
+   */
+  async getPokemonsFromGenerations(options = {}) {
+    const {
+      generationIds = [1, 2, 3, 4, 5, 6, 7, 8, 9],
+      perGeneration = 3,
+      concurrency = 6,
+    } = options;
+
+    const gens = Array.isArray(generationIds) ? generationIds : [generationIds];
+    const perGen = Math.max(1, Number(perGeneration) || 1);
+    const limit = Math.max(1, Number(concurrency) || 1);
+
+    const all = [];
+    for (const genId of gens) {
+      const species = await this._getGenerationSpecies(genId);
+      const selected = species.slice(0, perGen);
+      const pokemons = await this._mapWithConcurrency(selected, limit, (s) => this.getPokemonBasic(s.name));
+      all.push(...pokemons);
+    }
+
+    // Orden por id para que el listado sea estable
+    return all
+      .filter(Boolean)
+      .sort((a, b) => (a.id ?? 0) - (b.id ?? 0));
+  }
+
+  /**
    * Obtiene la cadena de evolución
    * @private
    */
@@ -51,6 +110,83 @@ class PokemonService {
       console.warn('Failed to fetch evolution chain:', error);
       return [];
     }
+  }
+
+  async _getGenerationSpecies(genId) {
+    const key = String(genId);
+    const cached = this._generationCache.get(key);
+    if (cached) return cached;
+
+    try {
+      const data = await apiClient.get(API_ENDPOINTS.GENERATION(genId));
+      const species = (data.pokemon_species || [])
+        .map((s) => ({
+          name: s.name,
+          id: this._extractIdFromSpeciesUrl(s.url),
+        }))
+        .filter((s) => s.name);
+
+      // La API no siempre viene ordenada; ordenamos por ID
+      species.sort((a, b) => (a.id ?? 0) - (b.id ?? 0));
+
+      this._generationCache.set(key, species);
+      return species;
+    } catch (error) {
+      console.warn(`Failed to fetch generation ${genId}:`, error);
+      return [];
+    }
+  }
+
+  _extractIdFromSpeciesUrl(url) {
+    if (!url) return null;
+    const match = String(url).match(/\/pokemon-species\/(\d+)\/?$/);
+    return match ? Number(match[1]) : null;
+  }
+
+  async _mapWithConcurrency(items, concurrency, mapper) {
+    const list = Array.isArray(items) ? items : [];
+    const limit = Math.max(1, Number(concurrency) || 1);
+    const results = new Array(list.length);
+
+    let index = 0;
+    const worker = async () => {
+      while (index < list.length) {
+        const current = index++;
+        try {
+          results[current] = await mapper(list[current], current);
+        } catch (e) {
+          results[current] = null;
+        }
+      }
+    };
+
+    const workers = Array.from({ length: Math.min(limit, list.length) }, () => worker());
+    await Promise.all(workers);
+    return results;
+  }
+
+  _normalizeBasicData(data) {
+    return {
+      id: data.id,
+      name: data.name,
+      image:
+        data.sprites?.other?.['official-artwork']?.front_default ||
+        data.sprites?.other?.dream_world?.front_default ||
+        data.sprites?.front_default ||
+        null,
+      types:
+        data.types?.map((t) => ({
+          original: t.type.name,
+          translated: traducciones.tipos[t.type.name] || t.type.name,
+        })) ||
+        [],
+      stats:
+        data.stats?.map((s) => ({
+          name: traducciones.stats[s.stat.name] || s.stat.name,
+          value: s.base_stat,
+        })) ||
+        [],
+    };
   }
 
   /**

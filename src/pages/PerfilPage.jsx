@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import '../styles/Perfil.css'
+import '../styles/PokemonModal.css'
 import Sidebar from '../components/Sidebar.jsx'
+import { useNav } from '../context/NavContext.jsx'
 
 const ASH_IMG = '../public/Ash.png'
 const PIKACHU_IMG = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/25.png'
@@ -9,6 +11,7 @@ const LAPRAS_IMG = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/spr
 
 export default function PerfilPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const { setPage } = useNav()
 
   return (
     <div className="pf-root">
@@ -18,6 +21,7 @@ export default function PerfilPage() {
 
       {/* ── ZONA SUPERIOR: hero rosa ── */}
       <div className="pf-top">
+        <button className="perfil-back-btn" onClick={() => setPage('home')} style={{ margin: '0 0 0 16px', paddingTop: '8px' }}>← Volver a la Pokédex</button>
         <div className="pf-navbar">
           {/* ← AQUÍ está el onClick que faltaba */}
           <button

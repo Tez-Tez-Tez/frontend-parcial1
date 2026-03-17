@@ -1,90 +1,230 @@
+/* Navbar Styles - Diseño Figma Restaurado */
+
 .navbar {
-  background: #fff;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-  position: sticky;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px 40px;
+  height: 88px;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.8);
+  border-bottom: 1px solid rgba(239, 85, 82, 0.1);
+  backdrop-filter: blur(6px);
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
   z-index: 1000;
 }
 
-.navbar-container {
-  height: 56px;
+.header-content {
   display: flex;
-  align-items: center;
+  flex-direction: row;
   justify-content: space-between;
-  padding: 0 18px;
+  align-items: center;
+  padding: 0;
+  gap: 16px;
+  width: 100%;
+  max-width: 1440px;
+  height: 66px;
 }
 
-.navbar-brand {
+.header-left {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 32px;
+  width: auto;
+}
+
+.header-logo-group {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 0;
+  gap: 12px;
+  width: auto;
+  height: 40px;
+  transition: opacity 0.2s;
+}
+
+.header-logo-group:hover {
+  opacity: 0.8;
+}
+
+.logo-box {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+  width: 40px;
+  height: 40px;
+  background: #EF5552;
+  border-radius: 8px;
+  font-size: 20px;
+  color: white; /* Asumiendo que el emoji se ve bien, si es texto, blanco */
+}
+
+.header-center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.header-right {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 0;
+  gap: 16px;
+  width: auto;
+  height: 66px;
+}
+
+.logo {
+  font-weight: 700;
+  font-size: 20px;
+  color: #0F172A;
+  white-space: nowrap;
+  letter-spacing: -0.5px;
+  height: 28px;
   display: flex;
   align-items: center;
-  gap: 10px;
+  font-family: 'Inter', sans-serif;
 }
 
-.navbar-logo {
+.search-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 9px 16px 10px 40px;
+  width: 100%;
+  max-width: 570px;
+  height: 40px;
+  background: #F1F5F9;
+  border-radius: 8px;
+  position: relative;
+}
+
+.search-icon {
+  font-size: 1rem;
+  color: #94A3B8;
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.search-input {
+  border: none;
+  background: none;
+  outline: none;
+  flex: 1;
+  font-size: 14px;
+  color: #0F172A;
+  font-family: 'Inter', sans-serif;
+  padding: 0;
+  width: 100%;
+}
+
+.search-input::placeholder {
+  color: #6B7280;
+  font-weight: 400;
+}
+
+.hamburger {
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+  width: 40px;
+  height: 40px;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+}
+
+.hamburger span {
   width: 20px;
-  height: 20px;
-  display: grid;
-  place-items: center;
-  color: #ef4444;
-  font-size: 18px;
-  line-height: 1;
+  height: 2px;
+  background-color: #0F172A;
+  transition: 0.3s;
+  display: block;
 }
 
-.navbar-title {
-  font-weight: 800;
-  font-size: 16px;
-  color: #111827;
-}
-
-.navbar-right {
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid rgba(239, 85, 82, 0.2);
+  background-size: cover;
+  background-position: center;
   display: flex;
   align-items: center;
-  gap: 10px;
+  justify-content: center;
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: transform 0.2s, border-color 0.2s;
+  padding: 0;
+}
+
+.user-avatar:hover {
+  transform: scale(1.05);
+  border-color: #EF5552;
+}
+
+.navbar-user {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.navbar-logout {
+  height: 36px;
+  padding: 0 16px;
+  border-radius: 8px;
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  background: rgba(239, 68, 68, 0.08);
+  color: #ef4444;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  transition: background 0.2s;
+}
+
+.navbar-logout:hover {
+  background: rgba(239, 68, 68, 0.15);
 }
 
 .navbar-help {
-  width: 26px;
-  height: 26px;
-  border-radius: 999px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
   border: 1px solid rgba(239, 68, 68, 0.45);
   background: rgba(239, 68, 68, 0.08);
   color: #ef4444;
   font-weight: 900;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .navbar-help:hover {
   background: rgba(239, 68, 68, 0.12);
 }
 
-.navbar-user {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+@media (max-width: 768px) {
+  .navbar {
+    padding: 12px 16px;
+  }
+  .search-container {
+    max-width: 100%;
+  }
 }
-
-.navbar-username {
-  font-size: 13px;
-  color: #374151;
-  font-weight: 600;
-  max-width: 160px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.navbar-logout {
-  height: 30px;
-  padding: 0 12px;
-  border-radius: 8px;
-  border: 1px solid rgba(239, 68, 68, 0.35);
-  background: rgba(239, 68, 68, 0.08);
-  color: #ef4444;
-  font-weight: 800;
-  cursor: pointer;
-}
-
-.navbar-logout:hover {
-  background: rgba(239, 68, 68, 0.12);
-}
-
