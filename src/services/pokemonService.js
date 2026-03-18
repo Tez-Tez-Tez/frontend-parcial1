@@ -76,6 +76,7 @@ class PokemonService {
   async getPokemonsFromGenerations(options = {}) {
     const {
       generationIds = [1, 2, 3, 4, 5, 6, 7, 8, 9],
+      typeId = null,
       perGeneration = 3,
       concurrency = 6,
     } = options;
@@ -83,11 +84,14 @@ class PokemonService {
     const gens = Array.isArray(generationIds) ? generationIds : [generationIds];
     const perGen = Math.max(1, Number(perGeneration) || 1);
     const limit = Math.max(1, Number(concurrency) || 1);
+    const allowedTypeNames = typeId ? await this._getPokemonNamesByType(typeId) : null;
 
     const all = [];
     for (const genId of gens) {
       const species = await this._getGenerationSpecies(genId);
-      const selected = species.slice(0, perGen);
+      const selected = allowedTypeNames
+        ? species.filter((pokemon) => allowedTypeNames.has(pokemon.name)).slice(0, perGen)
+        : species.slice(0, perGen);
       const pokemons = await this._mapWithConcurrency(selected, limit, (s) => this.getPokemonBasic(s.name));
       all.push(...pokemons);
     }
@@ -96,6 +100,110 @@ class PokemonService {
     return all
       .filter(Boolean)
       .sort((a, b) => (a.id ?? 0) - (b.id ?? 0));
+  }
+
+  async getPokemonsPageFromGenerations(options = {}) {
+    const {
+      generationIds = [1, 2, 3, 4, 5, 6, 7, 8, 9],
+      typeId = null,
+      searchQuery = '',
+      page = 1,
+      pageSize = 20,
+      concurrency = 8,
+    } = options;
+
+    const gens = Array.isArray(generationIds) ? generationIds : [generationIds];
+    const limit = Math.max(1, Number(concurrency) || 1);
+    const safePage = Math.max(1, Number(page) || 1);
+    const safePageSize = Math.max(1, Number(pageSize) || 20);
+    const allowedTypeNames = typeId ? await this._getPokemonNamesByType(typeId) : null;
+
+    const speciesByGeneration = await Promise.all(gens.map((genId) => this._getGenerationSpecies(genId)));
+    const allSpecies = speciesByGeneration
+      .flat()
+      .filter((pokemon) => (allowedTypeNames ? allowedTypeNames.has(pokemon.name) : true))
+      .filter((pokemon) => this._matchesSearch(pokemon, searchQuery))
+      .sort((a, b) => (a.id ?? 0) - (b.id ?? 0));
+
+    const total = allSpecies.length;
+    const totalPages = total > 0 ? Math.ceil(total / safePageSize) : 1;
+    const normalizedPage = Math.min(safePage, totalPages);
+    const startIndex = (normalizedPage - 1) * safePageSize;
+    const pageSpecies = allSpecies.slice(startIndex, startIndex + safePageSize);
+    const items = await this._mapWithConcurrency(pageSpecies, limit, async (species) => {
+      const basicPokemon = await this.getPokemonBasic(species.name);
+      return {
+        ...basicPokemon,
+        generationId: species.generationId ?? basicPokemon.generationId,
+      };
+    });
+
+    return {
+      items: items.filter(Boolean),
+      total,
+      page: normalizedPage,
+      pageSize: safePageSize,
+      totalPages,
+    };
+  }
+
+  async getPokemonsByNames(options = {}) {
+    const {
+      names = [],
+      typeId = null,
+      generationIds = null,
+      searchQuery = '',
+      page = 1,
+      pageSize = 20,
+      concurrency = 6,
+    } = options;
+
+    const uniqueNames = [...new Set((Array.isArray(names) ? names : []).filter(Boolean).map((name) => String(name).toLowerCase()))];
+    const safePage = Math.max(1, Number(page) || 1);
+    const safePageSize = Math.max(1, Number(pageSize) || 20);
+    const allowedGenerations = generationIds?.length ? new Set(generationIds) : null;
+    const allItems = await this._mapWithConcurrency(uniqueNames, concurrency, async (name) => this.getPokemonBasic(name));
+
+    const filteredItems = allItems
+      .filter(Boolean)
+      .filter((pokemon) => {
+        const matchesType = typeId
+          ? pokemon.types?.some((type) => type.original === typeId)
+          : true;
+        const matchesGeneration = allowedGenerations
+          ? allowedGenerations.has(pokemon.generationId)
+          : true;
+        const matchesSearch = this._matchesSearch(pokemon, searchQuery);
+
+        return matchesType && matchesGeneration && matchesSearch;
+      });
+
+    const total = filteredItems.length;
+    const totalPages = total > 0 ? Math.ceil(total / safePageSize) : 1;
+    const normalizedPage = Math.min(safePage, totalPages);
+    const startIndex = (normalizedPage - 1) * safePageSize;
+
+    return {
+      items: filteredItems.slice(startIndex, startIndex + safePageSize),
+      total,
+      page: normalizedPage,
+      pageSize: safePageSize,
+      totalPages,
+    };
+  }
+
+  async _getPokemonNamesByType(typeId) {
+    try {
+      const data = await apiClient.get(API_ENDPOINTS.TYPE(typeId));
+      return new Set(
+        (data.pokemon || [])
+          .map((entry) => entry.pokemon?.name)
+          .filter(Boolean)
+      );
+    } catch (error) {
+      console.warn(`Failed to fetch type ${typeId}:`, error);
+      return new Set();
+    }
   }
 
   /**
@@ -123,6 +231,7 @@ class PokemonService {
         .map((s) => ({
           name: s.name,
           id: this._extractIdFromSpeciesUrl(s.url),
+          generationId: Number(genId),
         }))
         .filter((s) => s.name);
 
@@ -141,6 +250,19 @@ class PokemonService {
     if (!url) return null;
     const match = String(url).match(/\/pokemon-species\/(\d+)\/?$/);
     return match ? Number(match[1]) : null;
+  }
+
+  _matchesSearch(pokemon, searchQuery) {
+    const normalizedQuery = String(searchQuery || '').trim().toLowerCase();
+
+    if (!normalizedQuery) {
+      return true;
+    }
+
+    const pokemonName = String(pokemon?.name || '').toLowerCase();
+    const pokemonId = pokemon?.id != null ? String(pokemon.id) : '';
+
+    return pokemonName.includes(normalizedQuery) || pokemonId.includes(normalizedQuery);
   }
 
   async _mapWithConcurrency(items, concurrency, mapper) {
@@ -169,6 +291,7 @@ class PokemonService {
     return {
       id: data.id,
       name: data.name,
+      generationId: this._getGenerationIdFromPokemonId(data.id),
       image:
         data.sprites?.other?.['official-artwork']?.front_default ||
         data.sprites?.other?.dream_world?.front_default ||
@@ -187,6 +310,21 @@ class PokemonService {
         })) ||
         [],
     };
+  }
+
+  _getGenerationIdFromPokemonId(id) {
+    const pokemonId = Number(id);
+
+    if (pokemonId >= 1 && pokemonId <= 151) return 1;
+    if (pokemonId <= 251) return 2;
+    if (pokemonId <= 386) return 3;
+    if (pokemonId <= 493) return 4;
+    if (pokemonId <= 649) return 5;
+    if (pokemonId <= 721) return 6;
+    if (pokemonId <= 809) return 7;
+    if (pokemonId <= 905) return 8;
+    if (pokemonId <= 1025) return 9;
+    return null;
   }
 
   /**

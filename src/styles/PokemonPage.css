@@ -23,10 +23,11 @@
 .main-header {
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
-  align-items: flex-end;
+  justify-content: center;
+  align-items: center;
   margin-bottom: 24px;
   width: 100%;
+  position: relative;
 }
 
 .main-header h1 {
@@ -37,6 +38,7 @@
   line-height: 40px;
   letter-spacing: -0.9px;
   font-family: 'Inter', sans-serif;
+  text-align: center;
 }
 
 .filter-btn {
@@ -57,6 +59,10 @@
   gap: 8px;
   transition: all 0.2s;
   font-family: 'Inter', sans-serif;
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 .filter-btn:hover {
@@ -69,7 +75,7 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 32px;
-  margin-bottom: 24px;
+  margin-bottom: 16px;
   width: 100%;
 }
 
@@ -81,127 +87,71 @@
   box-shadow: 0 0 0 3px rgba(239, 85, 82, 0.4);
 }
 
-/* Pagination (Estática por ahora, reutilizada para el reload btn) */
-.pagination {
+/* Pagination */
+.pagination-empty-state {
   display: flex;
-  flex-direction: row;
   justify-content: center;
   align-items: center;
-  padding: 32px 0;
+  padding: 24px 0 8px;
   width: 100%;
-  margin: 1rem 0 2rem 0;
+  color: #64748b;
+  font-family: 'Inter', sans-serif;
 }
 
-.pokedex-reload {
-  box-sizing: border-box;
+.pagination-bar {
   display: flex;
-  flex-direction: row;
   justify-content: center;
   align-items: center;
-  padding: 8px 24px;
-  height: 40px;
-  background: #EF5552;
-  border: none;
-  border-radius: 8px;
+  gap: 8px;
+  width: 100%;
+  padding: 20px 0 32px;
+}
+
+.pagination-arrow,
+.pagination-page {
+  min-width: 24px;
+  height: 24px;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  background: #ffffff;
+  color: #475569;
   cursor: pointer;
   font-family: 'Inter', sans-serif;
+  font-size: 10px;
   font-weight: 700;
-  font-size: 14px;
-  color: #FFFFFF;
-  transition: all 0.2s;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s, border-color 0.2s, color 0.2s;
 }
 
-.pokedex-reload:hover:not(:disabled) {
-  background-color: #d64d4d;
+.pagination-arrow:hover:not(:disabled),
+.pagination-page:hover:not(:disabled) {
+  background: #fff5f5;
+  border-color: #fca5a5;
+  color: #ef5552;
 }
 
-.pokedex-reload:disabled {
-  opacity: 0.6;
+.pagination-page-active {
+  background: #ef5552;
+  border-color: #ef5552;
+  color: #ffffff;
+}
+
+.pagination-arrow:disabled,
+.pagination-page:disabled {
+  opacity: 0.45;
   cursor: not-allowed;
 }
 
-/* Footer original HTML */
-footer {
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  padding: 48px 40px;
-  position: relative;
-  width: 100%;
-  background: #FFFFFF;
-  border-top: 1px solid #E2E8F0;
-}
-
-.footer-left {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 12px;
-  margin-bottom: 24px;
-}
-
-.footer-logo {
+.pagination-dots {
+  color: #64748b;
+  font-family: 'Inter', sans-serif;
+  font-size: 10px;
   font-weight: 700;
-  font-size: 18px;
-  color: #0F172A;
-  line-height: 28px;
-  letter-spacing: -0.45px;
-  display: flex;
-  align-items: center;
-  font-family: 'Inter', sans-serif;
-}
-
-.footer-left p {
-  color: #64748B;
-  font-size: 14px;
-  margin: 0;
-  line-height: 23px;
-  max-width: 526px;
-  font-family: 'Inter', sans-serif;
-}
-
-.footer-right {
-  position: absolute;
-  right: 40px;
-  top: 49px;
-}
-
-.footer-right h4 {
-  margin: 0 0 16px 0;
-  color: #0F172A;
-  font-size: 14px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.7px;
-  font-family: 'Inter', sans-serif;
-}
-
-.footer-right ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.footer-right li {
-  margin-bottom: 0;
-}
-
-.footer-right a {
-  color: #64748B;
-  text-decoration: none;
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 20px;
-  transition: color 0.2s;
-  font-family: 'Inter', sans-serif;
-}
-
-.footer-right a:hover {
-  color: #EF5552;
+  min-width: 18px;
+  text-align: center;
 }
 
 /* Responsive Design */
@@ -223,11 +173,9 @@ footer {
   .main-content {
       padding: 16px 16px;
   }
-  .footer-right {
-      position: relative;
-      right: 0;
-      top: 0;
-      margin-top: 24px;
+  .pagination-bar {
+      gap: 6px;
+      flex-wrap: wrap;
   }
 }
 
@@ -238,10 +186,12 @@ footer {
   }
   .main-header {
       flex-direction: column;
-      align-items: stretch;
+    align-items: center;
       gap: 16px;
   }
   .filter-btn {
+    position: static;
+    transform: none;
       width: 100%;
   }
 }

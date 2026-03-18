@@ -5,22 +5,27 @@ import '../styles/Navbar.css';
 
 export function Navbar({ onSearch }) {
   const { user, isAuthenticated, logout } = useAuth();
-  const { setPage } = useNav();
+  const { setPage, toggleSidebar, updateSearchQuery } = useNav();
   const [searchInput, setSearchInput] = useState('');
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
-    if (onSearch && searchInput.trim()) {
-      onSearch(searchInput.trim());
-      setSearchInput('');
+    const normalizedQuery = searchInput.trim();
+
+    if (onSearch) {
+      onSearch(normalizedQuery);
+    } else {
+      updateSearchQuery(normalizedQuery);
     }
+
+    setSearchInput(normalizedQuery);
   };
 
   return (
     <header className="navbar">
       <div className="header-content">
         <div className="header-left">
-          <button className="hamburger" onClick={() => {}} aria-label="Menú">
+          <button className="hamburger" onClick={toggleSidebar} aria-label="Menú">
             <span></span>
             <span></span>
             <span></span>

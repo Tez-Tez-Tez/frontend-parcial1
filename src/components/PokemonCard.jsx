@@ -6,7 +6,7 @@
 import { formatters } from '../utils/formatters.js';
 import '../styles/PokemonCard.css';
 
-export function PokemonCard({ pokemon }) {
+export function PokemonCard({ pokemon, isFavorite = false, onToggleFavorite }) {
   if (!pokemon) {
     return <div className="pokemon-card empty">No Pokémon selected</div>;
   }
@@ -23,8 +23,16 @@ export function PokemonCard({ pokemon }) {
     <article className="pokemon-card" aria-label={pokemon.name}>
       {/* Botón de favorito y ID */}
       <span className="pokemon-id">#{String(pokemon.id).padStart(4, '0')}</span>
-      <button className="favorite-btn" aria-label="Añadir a favoritos">
-        ♡
+      <button
+        className={`favorite-btn ${isFavorite ? 'liked' : ''}`}
+        aria-label={isFavorite ? 'Quitar de favoritos' : 'Añadir a favoritos'}
+        type="button"
+        onClick={(event) => {
+          event.stopPropagation();
+          onToggleFavorite?.(pokemon.name);
+        }}
+      >
+        {isFavorite ? '♥' : '♡'}
       </button>
 
       {/* Imagen */}
