@@ -1,27 +1,60 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import { useAuth } from '../hooks/useAuth.js';
 import '../styles/LoginPage.css';
 
+const loginSchema = z.object({
+  username: z.string().min(1, 'El usuario es obligatorio'),
+  password: z.string().min(1, 'La contraseña es obligatoria'),
+});
+
+const registerSchema = z.object({
+  username: z.string().min(3, 'El usuario debe tener al menos 3 caracteres'),
+  email: z.string().email('Debe ser un email válido'),
+  password: z.string().min(6, 'La contraseña debe tener al menos 6 caracteres'),
+});
+
 export function LoginPage() {
-  const { login, isLoading } = useAuth();
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const { login, register: authRegister, isLoading } = useAuth();
+  const [isRegistering, setIsRegistering] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState('');
+  const [globalError, setGlobalError] = useState('');
 
-  const canSubmit = useMemo(() => {
-    return !!username.trim() && !!password && !isLoading;
-  }, [username, password, isLoading]);
+  const currentSchema = isRegistering ? registerSchema : loginSchema;
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
-
-    try {
-      await login(username.trim(), password);
-    } catch (err) {
-      setError(err?.message || 'No se pudo iniciar sesión');
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset
+  } = useForm({
+    resolver: zodResolver(currentSchema),
+    defaultValues: {
+      username: '',
+      email: '',
+      password: '',
     }
+  });
+
+  const onSubmit = async (data) => {
+    setGlobalError('');
+    try {
+      if (isRegistering) {
+        await authRegister(data.username.trim(), data.email.trim(), data.password);
+      } else {
+        await login(data.username.trim(), data.password);
+      }
+    } catch (err) {
+      setGlobalError(err?.message || 'Hubo un error en la autenticación');
+    }
+  };
+
+  const toggleMode = () => {
+    setIsRegistering(!isRegistering);
+    setGlobalError('');
+    reset();
   };
 
   return (
@@ -33,14 +66,18 @@ export function LoginPage() {
           <span className="login-card-icon-inner">👤</span>
         </div>
 
-        <h1 className="login-title">Entrenadores Login</h1>
+        <h1 className="login-title">
+          {isRegistering ? 'Registro de Entrenador' : 'Entrenadores Login'}
+        </h1>
         <p className="login-subtitle">
-          Introduzca sus credenciales para acceder a su sistema informático.
+          {isRegistering
+            ? 'Crea tu cuenta para acceder a tu Pokedex personalizada.'
+            : 'Introduzca sus credenciales para acceder a su sistema informático.'}
         </p>
 
-        {error ? <div className="login-error">{error}</div> : null}
+        {globalError ? <div className="login-error">{globalError}</div> : null}
 
-        <form className="login-form" onSubmit={handleSubmit}>
+        <form className="login-form" onSubmit={handleSubmit(onSubmit)}>
           <div className="login-field">
             <label className="login-label" htmlFor="username">
               Usuario
@@ -50,14 +87,35 @@ export function LoginPage() {
               <input
                 id="username"
                 className="login-input"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                {...register('username')}
                 placeholder="Nombre"
                 autoComplete="username"
                 disabled={isLoading}
               />
             </div>
+            {errors.username && <p className="login-form-error" style={{color: '#ff4d4f', fontSize: '0.85rem', marginTop: '0.25rem'}}>{errors.username.message}</p>}
           </div>
+
+          {isRegistering && (
+            <div className="login-field">
+              <label className="login-label" htmlFor="email">
+                Correo Electrónico
+              </label>
+              <div className="login-inputWrap">
+                <span className="login-inputIcon" aria-hidden="true">📧</span>
+                <input
+                  id="email"
+                  type="email"
+                  className="login-input"
+                  {...register('email')}
+                  placeholder="entrenador@pokemon.com"
+                  autoComplete="email"
+                  disabled={isLoading}
+                />
+              </div>
+              {errors.email && <p className="login-form-error" style={{color: '#ff4d4f', fontSize: '0.85rem', marginTop: '0.25rem'}}>{errors.email.message}</p>}
+            </div>
+          )}
 
           <div className="login-field">
             <label className="login-label" htmlFor="password">
@@ -69,11 +127,10 @@ export function LoginPage() {
               <input
                 id="password"
                 className="login-input"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                {...register('password')}
                 placeholder="••••••••"
                 type={showPassword ? 'text' : 'password'}
-                autoComplete="current-password"
+                autoComplete={isRegistering ? 'new-password' : 'current-password'}
                 disabled={isLoading}
               />
               <button
@@ -86,31 +143,36 @@ export function LoginPage() {
                 {showPassword ? '🙈' : '👁️'}
               </button>
             </div>
-
-            <button
-              type="button"
-              className="login-forgot"
-              onClick={() => setError('Tip: en esta demo cualquier usuario/contraseña funciona.')}
-              disabled={isLoading}
-            >
-              ¿Has olvidado tu contraseña?
-            </button>
+            {errors.password && <p className="login-form-error" style={{color: '#ff4d4f', fontSize: '0.85rem', marginTop: '0.25rem'}}>{errors.password.message}</p>}
+            
+            {!isRegistering && (
+              <button
+                type="button"
+                className="login-forgot"
+                onClick={() => setGlobalError('Tip: Para la demo, puedes crear una nueva cuenta.')}
+                disabled={isLoading}
+              >
+                ¿Has olvidado tu contraseña?
+              </button>
+            )}
           </div>
 
-          <button className="login-submit" type="submit" disabled={!canSubmit}>
-            {isLoading ? 'Iniciando…' : 'Iniciar Sesión'}
+          <button className="login-submit" type="submit" disabled={isLoading}>
+            {isLoading 
+               ? (isRegistering ? 'Registrando…' : 'Iniciando…') 
+               : (isRegistering ? 'Crear Cuenta' : 'Iniciar Sesión')}
           </button>
         </form>
 
         <p className="login-register">
-          ¿No tienes una cuenta?{' '}
+          {isRegistering ? '¿Ya tienes una cuenta?' : '¿No tienes una cuenta?'}{' '}
           <button
             type="button"
             className="login-registerLink"
-            onClick={() => setError('Demo: el registro no está implementado en este parcial.')}
+            onClick={toggleMode}
             disabled={isLoading}
           >
-            Registrarse como nuevo entrenador
+            {isRegistering ? 'Iniciar sesión aquí' : 'Registrarse como nuevo entrenador'}
           </button>
         </p>
 
