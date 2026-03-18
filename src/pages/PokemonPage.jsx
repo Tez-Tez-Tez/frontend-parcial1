@@ -1,16 +1,41 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { usePokemon } from '../hooks/usePokemon.js';
 import { usePokedex } from '../hooks/usePokedex.js';
 import { PokemonCard } from '../components/PokemonCard.jsx';
 import { DetallePokemon } from '../components/DetallePokemon.jsx';
 import { LoadingSpinner } from '../components/LoadingSpinner.jsx';
 import { ErrorMessage } from '../components/ErrorMessage.jsx';
+import { useNav } from '../context/NavContext.jsx';
 import '../styles/PokemonPage.css';
 import '../styles/PokemonModal.css';
 
 export function PokemonPage() {
-  const { pokemons, loading: listLoading, error: listError, refetch } = usePokedex({
-    perGeneration: 3, // Se puede aumentar luego, ahora son 3 por generación para prueba rápida
+  const generationIds = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+  const pageSize = 20;
+  const {
+    activeNavigation,
+    activeGeneration,
+    activeType,
+    searchQuery,
+    favoritePokemon,
+    recentPokemon,
+    toggleFavoritePokemon,
+    addRecentPokemon,
+  } = useNav();
+  const [currentPage, setCurrentPage] = useState(1);
+  const scopedNames = activeNavigation === 'favorites'
+    ? favoritePokemon
+    : activeNavigation === 'recent'
+      ? recentPokemon
+      : [];
+  const { pokemons, loading: listLoading, error: listError, totalPages } = usePokedex({
+    mode: activeNavigation,
+    names: scopedNames,
+    generationIds: activeGeneration ? [activeGeneration] : generationIds,
+    typeId: activeType,
+    searchQuery,
+    page: currentPage,
+    pageSize,
   });
 
   const [selected, setSelected] = useState(null);
@@ -30,12 +55,67 @@ export function PokemonPage() {
     return () => { document.body.style.overflow = ''; };
   }, [selected]);
 
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [activeGeneration, activeNavigation, activeType, searchQuery]);
+
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [currentPage, totalPages]);
+
   const handleCardClick = (name) => {
     setShowError(false);
     setSelected(name);
+    addRecentPokemon(name);
   };
 
   const handleCloseModal = () => setSelected(null);
+
+  const paginationItems = useMemo(() => {
+    if (totalPages <= 1) {
+      return [1];
+    }
+
+    if (totalPages <= 5) {
+      return Array.from({ length: totalPages }, (_, index) => index + 1);
+    }
+
+    if (currentPage <= 3) {
+      return [1, 2, 3, 'ellipsis', totalPages];
+    }
+
+    if (currentPage >= totalPages - 2) {
+      return [1, 'ellipsis', totalPages - 2, totalPages - 1, totalPages];
+    }
+
+    return [1, 'ellipsis', currentPage, currentPage + 1, 'ellipsis-end', totalPages];
+  }, [currentPage, totalPages]);
+
+  const emptyStateMessage = useMemo(() => {
+    if (activeNavigation === 'favorites') {
+      return 'No tienes pokemones marcados como favoritos todavía.';
+    }
+
+    if (activeNavigation === 'recent') {
+      return 'Todavia no has abierto ningun pokemon desde la pokedex.';
+    }
+
+    if (activeType) {
+      return 'No hay pokemones cargados que coincidan con ese tipo.';
+    }
+
+    if (searchQuery) {
+      return `No se encontraron pokemones para la busqueda "${searchQuery}".`;
+    }
+
+    if (activeGeneration) {
+      return `No se encontraron pokemones para la generacion ${activeGeneration}.`;
+    }
+
+    return 'No hay pokemones para mostrar.';
+  }, [activeGeneration, activeNavigation, activeType, searchQuery]);
 
   return (
     <div className="pokemon-page-wrapper">
@@ -71,38 +151,69 @@ export function PokemonPage() {
                   }}
                   style={{ cursor: 'pointer', outline: 'none' }}
                 >
-                  <PokemonCard pokemon={p} />
+                  <PokemonCard
+                    pokemon={p}
+                    isFavorite={favoritePokemon.includes(p.name)}
+                    onToggleFavorite={toggleFavoritePokemon}
+                  />
                 </div>
               ))}
             </section>
 
-            {/* Paginación estática de ejemplo o el botón recargar */}
-            <div className="pagination" id="pagination">
-              <button type="button" className="pokedex-reload" onClick={refetch} disabled={listLoading}>
-                Recargar
-              </button>
-            </div>
+            {pokemons.length === 0 && (
+              <div className="pagination-empty-state" id="emptySidebarFiltersState">
+                <p>{emptyStateMessage}</p>
+              </div>
+            )}
+
+            {pokemons.length > 0 && totalPages > 0 && (
+              <nav className="pagination-bar" id="pagination" aria-label="Paginacion de Pokemon">
+                <button
+                  type="button"
+                  className="pagination-arrow"
+                  onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
+                  disabled={currentPage === 1}
+                  aria-label="Pagina anterior"
+                >
+                  ‹
+                </button>
+
+                {paginationItems.map((item, index) => {
+                  if (String(item).includes('ellipsis')) {
+                    return (
+                      <span key={`${item}-${index}`} className="pagination-dots" aria-hidden="true">
+                        ...
+                      </span>
+                    );
+                  }
+
+                  return (
+                    <button
+                      key={item}
+                      type="button"
+                      className={`pagination-page ${currentPage === item ? 'pagination-page-active' : ''}`}
+                      onClick={() => setCurrentPage(item)}
+                      aria-current={currentPage === item ? 'page' : undefined}
+                    >
+                      {item}
+                    </button>
+                  );
+                })}
+
+                <button
+                  type="button"
+                  className="pagination-arrow"
+                  onClick={() => setCurrentPage((page) => Math.min(totalPages, page + 1))}
+                  disabled={currentPage === totalPages}
+                  aria-label="Pagina siguiente"
+                >
+                  ›
+                </button>
+              </nav>
+            )}
           </>
         )}
       </main>
-
-      {/* Footer original */}
-      <footer>
-        <div className="footer-left">
-          <div className="footer-logo">🔴 PokéSPA</div>
-          <p>
-            Dentro el arte de la búsqueda. La mejor de datos más completa con actualizaciones, estrategias y secretos de legendarios.
-          </p>
-        </div>
-        <div className="footer-right">
-          <h4>POKEDEX</h4>
-          <ul>
-            <li><a href="#">Por generación</a></li>
-            <li><a href="#">Por tipo</a></li>
-            <li><a href="#">Legendarios</a></li>
-          </ul>
-        </div>
-      </footer>
 
       {/* ── MODAL DE DETALLE ── */}
       {selected && (

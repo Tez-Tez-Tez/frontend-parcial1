@@ -13,6 +13,7 @@ export const API_ENDPOINTS = {
   POKEMON_SPECIES: (id) => `/pokemon-species/${id}`,
   EVOLUTION_CHAIN: (id) => `/evolution-chain/${id}`,
   GENERATION: (id) => `/generation/${id}`,
+  TYPE: (name) => `/type/${name}`,
   ABILITY: (name) => `/ability/${name}`,
   ENCOUNTERS: (id) => `/pokemon/${id}/encounters`,
 };
