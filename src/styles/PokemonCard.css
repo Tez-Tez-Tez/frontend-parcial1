@@ -1,0 +1,184 @@
+/* PokemonCard Styles - Diseño Figma Restaurado */
+
+.pokemon-card {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 16px;
+    gap: 16px;
+    position: relative;
+    min-height: 326px;
+    background: #FFFFFF;
+    border: 1px solid #F1F5F9;
+    box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05);
+    border-radius: 16px;
+    transition: all 0.2s ease;
+    overflow: hidden;
+}
+
+.pokemon-card:hover {
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.pokemon-card.empty {
+    justify-content: center;
+    align-items: center;
+    color: #888;
+    border: 2px dashed rgba(0, 0, 0, 0.15);
+}
+
+.pokemon-id {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 900;
+    font-size: 14px;
+    line-height: 20px;
+    color: #CBD5E1;
+    z-index: 1;
+}
+
+.favorite-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: none;
+    border: none;
+    font-size: 1.25rem;
+    cursor: pointer;
+    opacity: 0.5;
+    width: auto;
+    height: auto;
+    padding: 0;
+    z-index: 2;
+    transition: opacity 0.2s;
+}
+
+.favorite-btn:hover,
+.favorite-btn.liked {
+    opacity: 1;
+    color: #EF5552;
+}
+
+.pokemon-image-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 24px 16px;
+    isolation: isolate;
+    width: calc(100% + 32px);
+    margin: 0 -16px 16px -16px;
+    height: 180px;
+    background: #F8FAFC;
+    border-radius: 0;
+    position: relative;
+    flex-shrink: 0;
+}
+
+.pokemon-image {
+    max-width: 100%;
+    max-height: 144px;
+    height: auto;
+    width: auto;
+    object-fit: contain;
+    display: block;
+}
+
+.pokemon-name {
+    font-weight: 700;
+    font-size: 20px;
+    margin: 0 0 12px 0;
+    color: #0F172A;
+    line-height: 28px;
+    width: 100%;
+}
+
+.pokemon-types {
+    display: flex;
+    gap: 4px;
+    margin: 0 0 12px 0;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+.type-badge {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 2px 8px;
+    border-radius: 9999px;
+    color: white;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    line-height: 15px;
+    white-space: nowrap;
+}
+
+/* Type Colors (se mantendrán si la clase type-{tipo} está mapeada, aunque ya usábamos inline styles en PokemonCard. Modificaré para unificar si hace falta) */
+.type-fire { background: #F08030; }
+.type-water { background: #6890F0; }
+.type-grass { background: #78C850; }
+.type-electric { background: #F8D030; }
+.type-ice { background: #98D8D8; }
+.type-fighting { background: #C03028; }
+.type-poison { background: #A040A0; }
+.type-ground { background: #E0C068; }
+.type-flying { background: #A890F0; }
+.type-psychic { background: #F85888; }
+.type-bug { background: #A8B820; }
+.type-rock { background: #B8A038; }
+.type-ghost { background: #705898; }
+.type-dragon { background: #7038F8; }
+.type-dark { background: #705848; }
+.type-steel { background: #B8B8D0; }
+.type-fairy { background: #EE99AC; }
+.type-normal { background: #A8A878; }
+
+.pokemon-stats {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    gap: 0;
+    position: relative;
+    height: auto;
+    bottom: auto;
+    left: auto;
+    right: auto;
+    margin-top: auto;
+    border-top: 1px solid #F1F5F9;
+    padding-top: 12px;
+}
+
+.stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0;
+    flex: 1;
+    text-align: center;
+}
+
+.stat-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: #94A3B8;
+    display: block;
+    line-height: 15px;
+    text-transform: uppercase;
+}
+
+.stat-value {
+    font-weight: 700;
+    color: #334155;
+    display: block;
+    font-size: 14px;
+    line-height: 20px;
+}

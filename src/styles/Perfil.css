@@ -1,0 +1,460 @@
+/* =============================================
+   PERFIL PAGE — colores exactos del Figma
+   ============================================= */
+* { box-sizing: border-box; }
+
+.pf-root {
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #F8F6F6;
+}
+
+/* ══ HERO SUPERIOR ══ */
+.pf-top {
+  /* fondo rosa con gradiente horizontal izquierda → derecha del Figma */
+  background:
+    linear-gradient(90deg, rgba(239,85,82,0.4) 0%, rgba(239,85,82,0) 100%),
+    rgba(239,85,82,0.2);
+  position: relative;
+  min-height: 160px;
+}
+
+.pf-navbar { padding: 20px 32px 12px; }
+
+.pf-hamburger {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 2px;
+}
+.pf-hamburger span {
+  display: block;
+  width: 26px;
+  height: 3.5px;
+  background: #000;
+  border-radius: 2px;
+}
+
+/* tarjeta perfil: se extiende hacia abajo sobre la zona gris */
+.pf-header-wrap {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 16px;
+  position: relative;
+  top: 55px;
+  z-index: 2;
+}
+
+.pf-header-wrap .pf-header-card {
+  border-radius: 12px;
+}
+
+/* ── TARJETA PERFIL ── */
+.pf-header-card {
+  background: #FFFFFF;
+  border: 1px solid rgba(239,85,82,0.1);
+  box-shadow: 0px 1px 2px rgba(0,0,0,0.05);
+  border-radius: 12px;
+  padding: 24px;
+}
+
+.pf-header-inner {
+  display: flex;
+  align-items: flex-end;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+/* avatar con borde rojo y sombra del Figma */
+.pf-avatar-box {
+  width: 128px;
+  height: 128px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+  flex-shrink: 0;
+  border: 2px solid #EF5552;
+  box-shadow: 0px 10px 15px -3px rgba(0,0,0,0.1), 0px 4px 6px -4px rgba(0,0,0,0.1);
+  padding: 4px;
+}
+.pf-avatar-img { width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 8px; }
+
+.pf-header-info { flex: 1; min-width: 0; }
+
+.pf-name-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 4px;
+}
+
+/* nombre tamaño 30px exacto del Figma */
+.pf-name {
+  font-size: 30px;
+  font-weight: 700;
+  color: #0F172A;
+  margin: 0;
+  line-height: 36px;
+}
+
+/* badge ENTRENADOR: fondo rgba(239,85,82,0.1), borde rgba(239,85,82,0.2), texto #EF5552 */
+.pf-badge-entrenador {
+  font-size: 12px;
+  font-weight: 700;
+  background: rgba(239,85,82,0.1);
+  color: #EF5552;
+  border: 1px solid rgba(239,85,82,0.2);
+  border-radius: 9999px;
+  padding: 4px 8px;
+  letter-spacing: 0.6px;
+  white-space: nowrap;
+}
+
+.pf-subtitle {
+  font-size: 16px;
+  color: #64748B;
+  margin: 0;
+  line-height: 24px;
+}
+
+.pf-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+/* botón Editar Perfil: fondo #EF5552 exacto */
+.pf-btn-editar {
+  background: #EF5552;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 24px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  box-shadow: 0px 1px 2px rgba(239,85,82,0.2);
+  white-space: nowrap;
+  line-height: 24px;
+}
+.pf-btn-editar:hover { background: #d94340; }
+
+/* botón share: fondo #F1F5F9, ícono #475569 */
+.pf-btn-share {
+  width: 39px;
+  height: 37px;
+  border-radius: 8px;
+  border: none;
+  background: #F1F5F9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #475569;
+  flex-shrink: 0;
+  padding: 10px 12px;
+}
+.pf-btn-share:hover { background: #e2e8f0; }
+
+/* ══ ZONA INFERIOR ══ */
+.pf-bottom {
+  background: #F8F6F6;
+  flex: 1;
+  padding-top: 85px;
+  padding-bottom: 48px;
+}
+
+.pf-bottom-inner {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 40px;
+  display: grid;
+  grid-template-columns: 296px 1fr;
+  gap: 32px;
+  align-items: start;
+}
+
+/* ── SIDEBAR ── */
+.pf-sidebar-card {
+  background: #FFFFFF;
+  border: 1px solid rgba(239,85,82,0.1);
+  box-shadow: 0px 1px 2px rgba(0,0,0,0.05);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.pf-side-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.pf-side-row:hover { background: #f8f8f8; }
+
+.pf-side-border {
+  border-top: 1px solid rgba(239,85,82,0.05);
+}
+
+.pf-side-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.pf-side-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #0F172A;
+  margin: 0;
+  line-height: 20px;
+}
+.pf-side-sub {
+  font-size: 12px;
+  font-weight: 400;
+  color: #64748B;
+  margin: 0;
+  line-height: 16px;
+}
+
+/* ── COLUMNA DERECHA ── */
+.pf-right-col {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* MIS FAVORITOS */
+.pf-fav-section {}
+
+.pf-fav-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.pf-fav-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #0F172A;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  line-height: 28px;
+}
+
+.pf-ver-todo {
+  font-size: 14px;
+  font-weight: 700;
+  color: #EF5552;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  padding: 0;
+  line-height: 20px;
+}
+
+/* GRID 2x2 */
+.pf-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+/* tarjeta pokémon */
+.pf-mon-card {
+  background: #FFFFFF;
+  border: 1px solid rgba(239,85,82,0.1);
+  box-shadow: 0px 1px 2px rgba(0,0,0,0.05);
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  isolation: isolate;
+}
+
+/* zona imagen con overlay rosado del Figma */
+.pf-mon-img-wrap {
+  height: 128px;
+  background: rgba(239,85,82,0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.pf-mon-img-wrap img {
+  max-height: 112px;
+  max-width: 90%;
+  object-fit: contain;
+}
+
+.pf-mon-body {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.pf-mon-meta-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.pf-add-fav-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #94A3B8;
+  margin: 0 0 4px;
+  line-height: 16px;
+}
+
+.pf-mon-name {
+  font-size: 18px;
+  font-weight: 700;
+  color: #0F172A;
+  margin: 0;
+  line-height: 28px;
+}
+
+.pf-tipos-row { display: flex; gap: 4px; flex-wrap: wrap; align-items: center; }
+
+/* tipos — colores exactos del Figma */
+.pf-tipo {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 4px;
+  letter-spacing: 0px;
+  text-transform: uppercase;
+  line-height: 15px;
+  white-space: nowrap;
+}
+.electrico { background: #FEF9C3; color: #A16207; }
+.fuego     { background: #FFEDD5; color: #C2410C; }
+.volador   { background: #DBEAFE; color: #1D4ED8; }
+.agua      { background: #DBEAFE; color: #1D4ED8; }
+.hielo     { background: #CFFAFE; color: #0E7490; }
+
+.pf-mon-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.pf-mon-owner {
+  font-size: 12px;
+  font-weight: 500;
+  color: #64748B;
+  line-height: 16px;
+}
+
+/* tarjeta Añadir — borde dashed, fondo #F8FAFC */
+.pf-mon-add-card {
+  background: #F8FAFC !important;
+  border: 2px dashed rgba(239,85,82,0.1) !important;
+  align-items: center;
+  justify-content: center;
+  min-height: 238px;
+  gap: 8px;
+  cursor: pointer;
+}
+
+/* círculo rosa claro con + del Figma */
+.pf-add-circle {
+  width: 48px;
+  height: 48px;
+  border-radius: 9999px;
+  background: rgba(239,85,82,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pf-add-text {
+  font-size: 16px;
+  font-weight: 700;
+  color: #94A3B8;
+  margin: 0;
+  line-height: 24px;
+}
+
+/* ── VIAJE DEL ENTRENADOR — columna derecha, debajo favoritos ── */
+.pf-viaje-section {}
+
+.pf-viaje-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.pf-viaje-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #0F172A;
+  margin: 0;
+  line-height: 28px;
+}
+
+/* card blanca con borde del Figma */
+.pf-viaje-card {
+  background: #FFFFFF;
+  border: 1px solid rgba(239,85,82,0.1);
+  box-shadow: 0px 1px 2px rgba(0,0,0,0.05);
+  border-radius: 12px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.pf-viaje-text {
+  font-size: 16px;
+  font-weight: 400;
+  color: #475569;
+  line-height: 26px;
+  margin: 0;
+}
+
+.pf-tag-row { display: flex; flex-wrap: wrap; gap: 8px; }
+
+/* tags: fondo #F1F5F9, texto #64748B del Figma */
+.pf-region-tag {
+  font-size: 12px;
+  font-weight: 700;
+  color: #64748B;
+  background: #F1F5F9;
+  border-radius: 9999px;
+  padding: 4px 12px;
+  line-height: 16px;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 700px) {
+  .pf-bottom-inner { grid-template-columns: 1fr; }
+  .pf-header-wrap  { padding: 0 16px; }
+  .pf-bottom-inner { padding: 0 16px; }
+  .pf-navbar       { padding: 16px 20px 10px; }
+  .pf-name         { font-size: 22px; }
+  .pf-header-actions { width: 100%; margin-left: 0; }
+  .pf-header-inner { align-items: flex-start; }
+}
