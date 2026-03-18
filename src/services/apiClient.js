@@ -2,7 +2,7 @@
  * Cliente HTTP centralizado para todas las llamadas API
  */
 
-import { API_CONFIG } from '../constants/api.js';
+import { API_CONFIG } from '../constants/api.js';//hh
 
 class ApiClient {
   constructor(baseURL = API_CONFIG.BASE_URL) {
