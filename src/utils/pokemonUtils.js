@@ -1,4 +1,4 @@
-export const DEFAULT_AVATAR = '../public/Ash.png'
+export const DEFAULT_AVATAR = '/Ash.png'
 
 export const INITIAL_FAVORITES = [25, 6, 131]
 

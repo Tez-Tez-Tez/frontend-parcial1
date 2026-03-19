@@ -98,6 +98,17 @@ export function AuthProvider({ children }) {
       users.push(newUser);
       localStorage.setItem('users', JSON.stringify(users));
 
+      // Inicializar el perfil para el nuevo usuario
+      const newUserProfile = {
+        name: username,
+        subtitle: 'Maestro Pokémon • Pueblo Paleta, Kanto',
+        avatar: newUser.avatar,
+        bio: `¡Hola! Soy ${username}, acabo de comenzar mi viaje para convertirme en el mejor Maestro Pokémon del mundo. ¡No importa lo difícil que sea, nunca nos rendimos!`,
+        regions: ['Kanto', 'Johto', 'Hoenn', 'Sinnoh', 'Teselia', 'Kalos', 'Alola', 'Galar']
+      };
+      localStorage.setItem('userProfile', JSON.stringify(newUserProfile));
+      window.dispatchEvent(new Event('profileUpdated'));
+
       // Auto-login after successful registration
       const userData = { ...newUser, loginTime: new Date().toISOString() };
       delete userData.password;
@@ -117,6 +128,7 @@ export function AuthProvider({ children }) {
   const logout = useCallback(() => {
     setUser(null);
     localStorage.removeItem('user');
+    localStorage.removeItem('userProfile');
   }, []);
 
 

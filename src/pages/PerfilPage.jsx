@@ -4,10 +4,12 @@ import Sidebar from '../components/SidebarPerfil.jsx'
 import { INITIAL_FAVORITES, DEFAULT_AVATAR } from '../utils/pokemonUtils'
 import { SearchModal, EditModal } from '../components/profile/ProfileModals'
 import { ProfileHeader, SidebarInterno, FavoritesSection, TrainerJourney } from '../components/profile/ProfileSections'
+import { useNav } from '../context/NavContext.jsx'
 
 export default function PerfilPage() {
+  const { favoritePokemon: favoriteNames, toggleFavoritePokemon } = useNav()
+  const [favoriteDetails, setFavoriteDetails] = useState([])
   const [sidebarOpen, setSidebarOpen] = useState(false)
-  const [favoritePokemon, setFavoritePokemon] = useState([])
   const [loading, setLoading] = useState(true)
   const [showSearch, setShowSearch] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
@@ -32,19 +34,11 @@ export default function PerfilPage() {
   const [editForm, setEditForm] = useState({ ...profile })
 
   useEffect(() => {
-    loadFavorites()
-  }, [])
-
-  const loadFavorites = async () => {
-    setLoading(true)
-    try {
-      const savedFavorites = localStorage.getItem('pokemonFavorites')
-      
-      if (savedFavorites) {
-        setFavoritePokemon(JSON.parse(savedFavorites))
-      } else {
-        const promises = INITIAL_FAVORITES.map(id => 
-          fetch(`https://pokeapi.co/api/v2/pokemon/${id}`).then(res => res.json())
+    const loadFavorites = async () => {
+      setLoading(true)
+      try {
+        const promises = favoriteNames.map(name => 
+          fetch(`https://pokeapi.co/api/v2/pokemon/${name}`).then(res => res.json())
         )
         const results = await Promise.all(promises)
         
@@ -55,21 +49,15 @@ export default function PerfilPage() {
           types: pokemon.types.map(t => t.type.name)
         }))
         
-        setFavoritePokemon(pokemonData)
-        localStorage.setItem('pokemonFavorites', JSON.stringify(pokemonData))
+        setFavoriteDetails(pokemonData)
+      } catch (error) {
+        console.error('Error loading favorites:', error)
+      } finally {
+        setLoading(false)
       }
-    } catch (error) {
-      console.error('Error loading favorites:', error)
-    } finally {
-      setLoading(false)
     }
-  }
-
-  useEffect(() => {
-    if (favoritePokemon.length > 0) {
-      localStorage.setItem('pokemonFavorites', JSON.stringify(favoritePokemon))
-    }
-  }, [favoritePokemon])
+    loadFavorites()
+  }, [favoriteNames])
 
   const searchPokemon = async (term) => {
     if (!term.trim()) {
@@ -107,20 +95,20 @@ export default function PerfilPage() {
   }
 
   const addToFavorites = async (pokemon) => {
-    if (favoritePokemon.some(p => p.id === pokemon.id)) {
+    if (favoriteNames.includes(pokemon.name.toLowerCase())) {
       alert('¡Este Pokémon ya está en favoritos!')
       return
     }
     
-    setFavoritePokemon([...favoritePokemon, pokemon])
+    toggleFavoritePokemon(pokemon.name)
     setShowSearch(false)
     setSearchTerm('')
     setSearchResults([])
   }
 
-  const removeFromFavorites = (id, e) => {
+  const removeFromFavorites = (name, e) => {
     e.stopPropagation()
-    setFavoritePokemon(favoritePokemon.filter(p => p.id !== id))
+    toggleFavoritePokemon(name)
   }
 
   const handleAvatarChange = (e) => {
@@ -178,7 +166,7 @@ export default function PerfilPage() {
 
           <div className="pf-right-col">
             <FavoritesSection 
-              favoritePokemon={favoritePokemon} 
+              favoritePokemon={favoriteDetails} 
               loading={loading}
               removeFromFavorites={removeFromFavorites}
               setShowSearch={setShowSearch}

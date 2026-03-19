@@ -5,8 +5,12 @@ import '../styles/Navbar.css';
 
 export function Navbar({ onSearch }) {
   const { user, isAuthenticated } = useAuth();
-  const { setPage, toggleSidebar, updateSearchQuery } = useNav();
+  const { setPage, toggleSidebar, updateSearchQuery, searchQuery, setSearchQuery } = useNav();
   const [searchInput, setSearchInput] = useState('');
+  
+  useEffect(() => {
+    setSearchInput(searchQuery);
+  }, [searchQuery]);
   const [avatarUrl, setAvatarUrl] = useState('../public/Ash.png'); // Por defecto Ash
 
   // Actualizar avatar cuando cambie en localStorage
@@ -73,7 +77,10 @@ export function Navbar({ onSearch }) {
         <div className="header-left">
           <button
             className="header-logo-group"
-            onClick={() => setPage('home')}
+            onClick={() => {
+              setPage('home');
+              setSearchQuery('');
+            }}
           >
             <div className="logo-box">
               <div className="logo-icon-container">
@@ -112,7 +119,10 @@ export function Navbar({ onSearch }) {
                 className="user-avatar"
                 type="button"
                 title="Ver mi perfil"
-                onClick={() => setPage('perfil')}
+                onClick={() => {
+                  setPage('perfil');
+                  setSearchQuery('');
+                }}
                 aria-label="Ir a mi perfil"
                 style={{
                   backgroundImage: `url(${avatarUrl})`

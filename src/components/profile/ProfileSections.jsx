@@ -119,7 +119,7 @@ export function FavoritesSection({ favoritePokemon, loading, removeFromFavorites
             <div key={pokemon.id} className="pf-mon-card" style={{ position: 'relative' }}>
               <button 
                 className="pf-remove-btn"
-                onClick={(e) => removeFromFavorites(pokemon.id, e)}
+                onClick={(e) => removeFromFavorites(pokemon.name, e)}
               >
                 ×
               </button>

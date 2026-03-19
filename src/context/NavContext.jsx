@@ -51,12 +51,14 @@ export function NavProvider({ children }) {
       setActiveGeneration(null);
       setActiveType(null);
     }
+    setSearchQuery('');
     setPage('home');
     closeSidebar();
   };
 
   const selectGeneration = (generationId) => {
     setActiveGeneration((currentGeneration) => (currentGeneration === generationId ? null : generationId));
+    setSearchQuery('');
     setPage('home');
     setActiveNavigation('all');
     closeSidebar();
@@ -64,6 +66,7 @@ export function NavProvider({ children }) {
 
   const selectType = (typeId) => {
     setActiveType((currentType) => (currentType === typeId ? null : typeId));
+    setSearchQuery('');
     setPage('home');
     setActiveNavigation('all');
     closeSidebar();
@@ -115,6 +118,7 @@ export function NavProvider({ children }) {
       activeGeneration,
       activeType,
       searchQuery,
+      setSearchQuery,
       favoritePokemon,
       recentPokemon,
       selectNavigation,
