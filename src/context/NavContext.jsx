@@ -36,6 +36,7 @@ export function NavProvider({ children }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [favoritePokemon, setFavoritePokemon] = useState(() => readStoredList(FAVORITES_STORAGE_KEY));
   const [recentPokemon, setRecentPokemon] = useState(() => readStoredList(RECENT_STORAGE_KEY));
+  const [selectedPokemon, setSelectedPokemon] = useState(null);
 
   const toggleSidebar = () => {
     setIsSidebarOpen((currentValue) => !currentValue);
@@ -104,6 +105,22 @@ export function NavProvider({ children }) {
     });
   };
 
+  const openPokemonDetail = (pokemonName) => {
+    if (!pokemonName) {
+      return;
+    }
+
+    const normalizedName = String(pokemonName).toLowerCase();
+    setSelectedPokemon(normalizedName);
+    addRecentPokemon(normalizedName);
+    setPage('detail');
+  };
+
+  const closePokemonDetail = () => {
+    setSelectedPokemon(null);
+    setPage('home');
+  };
+
   const value = useMemo(
     () => ({
       page,
@@ -117,12 +134,15 @@ export function NavProvider({ children }) {
       searchQuery,
       favoritePokemon,
       recentPokemon,
+      selectedPokemon,
       selectNavigation,
       selectGeneration,
       selectType,
       updateSearchQuery,
       toggleFavoritePokemon,
       addRecentPokemon,
+      openPokemonDetail,
+      closePokemonDetail,
     }),
     [
       page,
@@ -133,6 +153,7 @@ export function NavProvider({ children }) {
       searchQuery,
       favoritePokemon,
       recentPokemon,
+      selectedPokemon,
     ]
   );
 

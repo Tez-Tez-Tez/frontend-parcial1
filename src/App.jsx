@@ -3,6 +3,7 @@ import { NavProvider, useNav } from './context/NavContext.jsx'
 import { Navbar } from './components/Navbar.jsx'
 import Sidebar from './components/Sidebar.jsx'
 import { PokemonPage } from './pages/PokemonPage.jsx'
+import DetallePokemonPage from './pages/DetallePokemonPage.jsx'
 import { LoginPage } from './pages/LoginPage.jsx'
 import PerfilPage from './pages/PerfilPage.jsx'
 import { useAuth } from './hooks/useAuth.js'
@@ -10,7 +11,7 @@ import './App.css'
 
 function AppContent() {
   const { isAuthenticated } = useAuth()
-  const { page, isSidebarOpen, closeSidebar } = useNav()
+  const { page, isSidebarOpen, closeSidebar, selectedPokemon } = useNav()
   
   // Determinar si debemos mostrar el navbar
   const showNavbar = isAuthenticated && page !== 'perfil'
@@ -25,6 +26,8 @@ function AppContent() {
           <LoginPage />
         ) : page === 'perfil' ? (
           <PerfilPage />
+        ) : page === 'detail' ? (
+          <DetallePokemonPage key={selectedPokemon || 'detail'} />
         ) : (
           <PokemonPage />
         )}

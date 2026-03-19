@@ -1,14 +1,11 @@
 import { useState, useEffect, useMemo } from 'react';
-import { usePokemon } from '../hooks/usePokemon.js';
 import { usePokedex } from '../hooks/usePokedex.js';
 import { PokemonCard } from '../components/PokemonCard.jsx';
-import { DetallePokemon } from '../components/DetallePokemon.jsx';
 import { LoadingSpinner } from '../components/LoadingSpinner.jsx';
 import { ErrorMessage } from '../components/ErrorMessage.jsx';
 import { SiteFooter } from '../components/SiteFooter.jsx';
 import { useNav } from '../context/NavContext.jsx';
 import '../styles/PokemonPage.css';
-import '../styles/PokemonModal.css';
 
 export function PokemonPage() {
   const generationIds = [1, 2, 3, 4, 5, 6, 7, 8, 9];
@@ -21,7 +18,7 @@ export function PokemonPage() {
     favoritePokemon,
     recentPokemon,
     toggleFavoritePokemon,
-    addRecentPokemon,
+    openPokemonDetail,
   } = useNav();
   const [currentPage, setCurrentPage] = useState(1);
   const scopedNames = activeNavigation === 'favorites'
@@ -39,40 +36,24 @@ export function PokemonPage() {
     pageSize,
   });
 
-  const [selected, setSelected] = useState(null);
-  const { pokemon, loading: detailLoading, error: detailError } = usePokemon(selected);
   const [showError, setShowError] = useState(true);
 
-  // Cerrar modal con Escape
   useEffect(() => {
-    const handleKey = (e) => { if (e.key === 'Escape') setSelected(null); };
-    window.addEventListener('keydown', handleKey);
-    return () => window.removeEventListener('keydown', handleKey);
-  }, []);
-
-  // Bloquear scroll del body cuando el modal está abierto
-  useEffect(() => {
-    document.body.style.overflow = selected ? 'hidden' : '';
-    return () => { document.body.style.overflow = ''; };
-  }, [selected]);
-
-  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setCurrentPage(1);
   }, [activeGeneration, activeNavigation, activeType, searchQuery]);
 
   useEffect(() => {
     if (currentPage > totalPages) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setCurrentPage(totalPages);
     }
   }, [currentPage, totalPages]);
 
   const handleCardClick = (name) => {
     setShowError(false);
-    setSelected(name);
-    addRecentPokemon(name);
+    openPokemonDetail(name);
   };
-
-  const handleCloseModal = () => setSelected(null);
 
   const paginationItems = useMemo(() => {
     if (totalPages <= 1) {
@@ -217,45 +198,6 @@ export function PokemonPage() {
       </main>
 
       <SiteFooter />
-
-      {/* ── MODAL DE DETALLE ── */}
-      {selected && (
-        <div
-          className="pokemon-modal-overlay"
-          onClick={(e) => { if (e.target === e.currentTarget) handleCloseModal(); }}
-          role="dialog"
-          aria-modal="true"
-          aria-label="Detalle del Pokémon"
-        >
-          <div className="pokemon-modal-container">
-            <button
-              className="pokemon-modal-close"
-              onClick={handleCloseModal}
-              aria-label="Cerrar"
-              type="button"
-            >
-              ✕
-            </button>
-
-            {detailLoading && (
-              <div className="pokemon-modal-loading">
-                <LoadingSpinner />
-                <p>Cargando datos...</p>
-              </div>
-            )}
-
-            {detailError && showError && (
-              <div className="pokemon-modal-error">
-                <ErrorMessage message={detailError} onDismiss={handleCloseModal} />
-              </div>
-            )}
-
-            {!detailLoading && !detailError && pokemon && (
-              <DetallePokemon pokemon={pokemon} />
-            )}
-          </div>
-        </div>
-      )}
     </div>
   );
 }
