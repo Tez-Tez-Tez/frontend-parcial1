@@ -5,6 +5,7 @@ import { PokemonCard } from '../components/PokemonCard.jsx';
 import { DetallePokemon } from '../components/DetallePokemon.jsx';
 import { LoadingSpinner } from '../components/LoadingSpinner.jsx';
 import { ErrorMessage } from '../components/ErrorMessage.jsx';
+import { SiteFooter } from '../components/SiteFooter.jsx';
 import { useNav } from '../context/NavContext.jsx';
 import '../styles/PokemonPage.css';
 import '../styles/PokemonModal.css';
@@ -214,6 +215,8 @@ export function PokemonPage() {
           </>
         )}
       </main>
+
+      <SiteFooter />
 
       {/* ── MODAL DE DETALLE ── */}
       {selected && (
