@@ -29,7 +29,7 @@ function getStoredUsers() {
     email: 'demo@example.com',
     password: 'demo',
     name: 'Entrenador Demo',
-    avatar: 'https://ui-avatars.com/api/?name=Demo&background=667eea&color=fff',
+    avatar: '/Ash.png',
     role: 'user',
   };
   
@@ -91,7 +91,7 @@ export function AuthProvider({ children }) {
         email,
         password, // Almacenado de forma simple por ser una demo
         name: username,
-        avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(username)}&background=667eea&color=fff`,
+        avatar: '/Ash.png',
         role: 'user',
       };
 
