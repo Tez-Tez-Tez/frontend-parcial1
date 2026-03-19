@@ -1,0 +1,131 @@
+.site-footer {
+  width: 100%;
+  background: #ffffff;
+  border-top: 1px solid #e5e7eb;
+  margin-top: auto;
+}
+
+.site-footer-inner {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 26px 40px 18px;
+  display: flex;
+  justify-content: space-between;
+  gap: 48px;
+  align-items: flex-start;
+}
+
+.site-footer-brand {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  max-width: 560px;
+}
+
+.site-footer-logo {
+  width: 24px;
+  height: 24px;
+  border-radius: 7px;
+  background: #ef5552;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 8px 18px rgba(239, 85, 82, 0.18);
+}
+
+.site-footer-logo-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  background: #ffffff;
+}
+
+.site-footer-brand-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.site-footer-title {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  font-size: 20px;
+  line-height: 1.2;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.site-footer-description {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  line-height: 1.85;
+  color: #94a3b8;
+}
+
+.site-footer-nav {
+  min-width: 180px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.site-footer-nav-title {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #0f172a;
+}
+
+.site-footer-nav-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  color: #64748b;
+}
+
+.site-footer-copyright {
+  margin: 0;
+  padding: 0 40px 10px;
+  text-align: center;
+  font-family: 'Inter', sans-serif;
+  font-size: 10px;
+  color: #cbd5e1;
+}
+
+@media (max-width: 768px) {
+  .site-footer-inner {
+    padding: 24px 20px 16px;
+    flex-direction: column;
+    gap: 28px;
+  }
+
+  .site-footer-brand {
+    max-width: none;
+  }
+
+  .site-footer-nav {
+    min-width: 0;
+  }
+
+  .site-footer-copyright {
+    padding: 0 20px 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .site-footer-brand {
+    flex-direction: column;
+  }
+
+  .site-footer-description {
+    line-height: 1.7;
+  }
+}
