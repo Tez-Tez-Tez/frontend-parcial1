@@ -262,7 +262,13 @@ class PokemonService {
     const pokemonName = String(pokemon?.name || '').toLowerCase();
     const pokemonId = pokemon?.id != null ? String(pokemon.id) : '';
 
-    return pokemonName.includes(normalizedQuery) || pokemonId.includes(normalizedQuery);
+    const isNumericQuery = /^\d+$/.test(normalizedQuery);
+    if (isNumericQuery) {
+      const queryAsNumber = String(parseInt(normalizedQuery, 10));
+      return pokemonId === queryAsNumber;
+    }
+
+    return pokemonName.includes(normalizedQuery);
   }
 
   async _mapWithConcurrency(items, concurrency, mapper) {

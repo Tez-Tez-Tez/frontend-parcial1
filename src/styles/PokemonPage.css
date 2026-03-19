@@ -47,23 +47,58 @@
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: center;
   padding: 8px 16px;
+  gap: 8px;
+  width: 146.5px;
   height: 38px;
   background: #FFFFFF;
   border: 1px solid #E2E8F0;
   border-radius: 8px;
   cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
-  color: #0F172A;
-  gap: 8px;
-  transition: all 0.2s;
-  font-family: 'Inter', sans-serif;
   position: absolute;
   right: 0;
   top: 50%;
   transform: translateY(-50%);
+}
+
+.filter-icon-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0px;
+  width: 13.5px;
+  height: 9px;
+  flex: none;
+  order: 0;
+  flex-grow: 0;
+}
+
+.filter-icon {
+  width: 13.5px;
+  height: 9px;
+  background: #0F172A;
+  flex: none;
+  order: 0;
+  flex-grow: 0;
+  -webkit-mask: url('data:image/svg+xml;utf8,<svg width="14" height="10" viewBox="0 0 14 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1.5H13M3 4.83333H11M6 8.16667H8" stroke="black" stroke-width="1.67" stroke-linecap="round" stroke-linejoin="round"/></svg>') no-repeat center;
+  mask: url('data:image/svg+xml;utf8,<svg width="14" height="10" viewBox="0 0 14 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1.5H13M3 4.83333H11M6 8.16667H8" stroke="black" stroke-width="1.67" stroke-linecap="round" stroke-linejoin="round"/></svg>') no-repeat center;
+}
+
+.filter-text {
+  width: 91px;
+  height: 20px;
+  font-family: 'Inter', sans-serif;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 20px;
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: #0F172A;
+  flex: none;
+  order: 1;
+  flex-grow: 0;
 }
 
 .filter-btn:hover {

@@ -29,7 +29,7 @@ function getStoredUsers() {
     email: 'demo@example.com',
     password: 'demo',
     name: 'Entrenador Demo',
-    avatar: 'https://ui-avatars.com/api/?name=Demo&background=667eea&color=fff',
+    avatar: '/Ash.png',
     role: 'user',
   };
   
@@ -91,12 +91,23 @@ export function AuthProvider({ children }) {
         email,
         password, // Almacenado de forma simple por ser una demo
         name: username,
-        avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(username)}&background=667eea&color=fff`,
+        avatar: '/Ash.png',
         role: 'user',
       };
 
       users.push(newUser);
       localStorage.setItem('users', JSON.stringify(users));
+
+      // Inicializar el perfil para el nuevo usuario
+      const newUserProfile = {
+        name: username,
+        subtitle: 'Maestro Pokémon • Pueblo Paleta, Kanto',
+        avatar: newUser.avatar,
+        bio: `¡Hola! Soy ${username}, acabo de comenzar mi viaje para convertirme en el mejor Maestro Pokémon del mundo. ¡No importa lo difícil que sea, nunca nos rendimos!`,
+        regions: ['Kanto', 'Johto', 'Hoenn', 'Sinnoh', 'Teselia', 'Kalos', 'Alola', 'Galar']
+      };
+      localStorage.setItem('userProfile', JSON.stringify(newUserProfile));
+      window.dispatchEvent(new Event('profileUpdated'));
 
       // Auto-login after successful registration
       const userData = { ...newUser, loginTime: new Date().toISOString() };
@@ -117,6 +128,7 @@ export function AuthProvider({ children }) {
   const logout = useCallback(() => {
     setUser(null);
     localStorage.removeItem('user');
+    localStorage.removeItem('userProfile');
   }, []);
 
 

@@ -5,17 +5,22 @@ import '../styles/Navbar.css';
 
 export function Navbar({ onSearch }) {
   const { user, isAuthenticated } = useAuth();
-  const { setPage, toggleSidebar, updateSearchQuery } = useNav();
+  const { setPage, toggleSidebar, updateSearchQuery, searchQuery, setSearchQuery } = useNav();
   const [searchInput, setSearchInput] = useState('');
-  const [avatarUrl, setAvatarUrl] = useState('/Ash.png');
+  
+  useEffect(() => {
+    setSearchInput(searchQuery);
+  }, [searchQuery]);
+  const [avatarUrl, setAvatarUrl] = useState('/Ash.png'); // Por defecto Ash
 
+  // Actualizar avatar cuando cambie en localStorage
   useEffect(() => {
     const loadAvatar = () => {
       try {
         const savedProfile = localStorage.getItem('userProfile');
         if (savedProfile) {
           const profile = JSON.parse(savedProfile);
-          if (profile.avatar) {
+          if (profile.avatar && profile.avatar !== '/Ash.png') {
             setAvatarUrl(profile.avatar);
           } else {
             setAvatarUrl('/Ash.png');
@@ -29,12 +34,20 @@ export function Navbar({ onSearch }) {
       }
     };
 
+    // Cargar avatar inicial
     loadAvatar();
 
+    // Escuchar cambios en localStorage (cuando se guarda perfil)
     const handleStorageChange = (e) => {
-      if (e.key === 'userProfile') loadAvatar();
+      if (e.key === 'userProfile') {
+        loadAvatar();
+      }
     };
-    const handleProfileUpdate = () => loadAvatar();
+
+    // Escuchar evento personalizado de actualización de perfil
+    const handleProfileUpdate = () => {
+      loadAvatar();
+    };
 
     window.addEventListener('storage', handleStorageChange);
     window.addEventListener('profileUpdated', handleProfileUpdate);
@@ -48,11 +61,13 @@ export function Navbar({ onSearch }) {
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     const normalizedQuery = searchInput.trim();
+
     if (onSearch) {
       onSearch(normalizedQuery);
     } else {
       updateSearchQuery(normalizedQuery);
     }
+
     setSearchInput(normalizedQuery);
   };
 
@@ -60,64 +75,43 @@ export function Navbar({ onSearch }) {
     <header className="navbar">
       <div className="header-content">
         <div className="header-left">
-          {/* Hamburger */}
-          <button className="hamburger" onClick={toggleSidebar} aria-label="Menú">
-            <span></span>
-            <span></span>
-            <span></span>
-          </button>
-
-          {/* Logo */}
           <button
             className="header-logo-group"
-            onClick={() => setPage('home')}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+            onClick={() => {
+              setPage('home');
+              setSearchQuery('');
+            }}
           >
             <div className="logo-box">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <circle cx="12" cy="12" r="9" stroke="white" strokeWidth="2" />
-                <line x1="3" y1="12" x2="21" y2="12" stroke="white" strokeWidth="2" />
-                <circle cx="12" cy="12" r="3" fill="white" />
-                <circle cx="12" cy="12" r="2" fill="#EF5552" />
-              </svg>
+              <div className="logo-icon-container">
+                <div className="logo-icon"></div>
+              </div>
             </div>
-            <div className="logo">PokéSPA</div>
+            <div className="logo-text-container">
+              <h2 className="logo">PokéSPA</h2>
+            </div>
           </button>
         </div>
 
-        {/* Search */}
         <div className="header-center">
           <form className="search-container" onSubmit={handleSearchSubmit}>
-            {/* Magnifier icon */}
-            <svg className="search-icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <circle cx="11" cy="11" r="7" />
-              <line x1="21" y1="21" x2="16.65" y2="16.65" />
-            </svg>
-            <input
-              type="text"
-              className="search-input"
-              placeholder="Busca pokémon, movimientos, habilidad..."
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-            />
+            <div className="search-icon-container">
+              <div className="search-icon"></div>
+            </div>
+            <div className="search-input-container">
+              <input
+                type="text"
+                className="search-input"
+                placeholder="Busca pokemon, movimientos, habili..."
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+              />
+            </div>
           </form>
         </div>
 
-        {/* Right */}
         <div className="header-right">
-          {/* Question / help */}
-          <button
-            className="navbar-help"
-            type="button"
-            aria-label="Ayuda"
-            onClick={() => window.alert('Ayuda: inicia sesión para continuar.')}
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="12" cy="12" r="10" />
-              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
-              <line x1="12" y1="17" x2="12.01" y2="17" />
-            </svg>
-          </button>
+
 
           {isAuthenticated ? (
             <div className="navbar-user">
@@ -125,20 +119,23 @@ export function Navbar({ onSearch }) {
                 className="user-avatar"
                 type="button"
                 title="Ver mi perfil"
-                onClick={() => setPage('perfil')}
+                onClick={() => {
+                  setPage('perfil');
+                  setSearchQuery('');
+                }}
                 aria-label="Ir a mi perfil"
                 style={{
-                  backgroundImage: `url(${avatarUrl})`,
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center'
+                  backgroundImage: `url(${avatarUrl})`
                 }}
               >
-                <img
+                {/* Si la imagen falla, mostrar inicial */}
+                <img 
                   src={avatarUrl}
                   alt="Avatar"
                   style={{ display: 'none' }}
                   onError={(e) => {
                     e.target.style.display = 'none';
+                    // Si falla la carga, mostrar inicial
                     const button = e.target.closest('.user-avatar');
                     if (button) {
                       button.style.backgroundImage = `url(https://ui-avatars.com/api/?name=${encodeURIComponent(

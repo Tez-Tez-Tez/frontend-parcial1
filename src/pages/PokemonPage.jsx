@@ -3,6 +3,7 @@ import { usePokedex } from '../hooks/usePokedex.js';
 import { PokemonCard } from '../components/PokemonCard.jsx';
 import { LoadingSpinner } from '../components/LoadingSpinner.jsx';
 import { ErrorMessage } from '../components/ErrorMessage.jsx';
+import Sidebar from '../components/Sidebar.jsx';
 import { useNav } from '../context/NavContext.jsx';
 import { SiteFooter } from '../components/SiteFooter.jsx';
 import '../styles/PokemonPage.css';
@@ -18,7 +19,12 @@ export function PokemonPage() {
     favoritePokemon,
     recentPokemon,
     toggleFavoritePokemon,
+    addRecentPokemon,
+    toggleSidebar,
+    isSidebarOpen,
+    closeSidebar,
     openPokemonDetail,
+
   } = useNav();
   const [currentPage, setCurrentPage] = useState(1);
   const scopedNames = activeNavigation === 'favorites'
@@ -101,12 +107,26 @@ export function PokemonPage() {
 
   return (
     <div className="pokemon-page-wrapper">
+      <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
       <main className="main-content">
-        <div className="main-header">
-          <h1>Pokedex</h1>
-          <div className="filter-btn">
-            🔽 Filter por 📊
-          </div>
+        <div className="main-header" style={{ display: 'flex', alignItems: 'center', position: 'relative', width: '100%', paddingLeft: '60px' }}>
+          <button 
+            className="hamburger" 
+            onClick={toggleSidebar} 
+            aria-label="Menú"
+            style={{ position: 'absolute', left: '0px' }}
+          >
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
+          <h1 style={{ margin: 0 }}>Pokedex</h1>
+          <button className="filter-btn" style={{ marginLeft: 'auto' }}>
+            <div className="filter-icon-container">
+              <div className="filter-icon"></div>
+            </div>
+            <div className="filter-text">Filtrar por: ID</div>
+          </button>
         </div>
 
         {listLoading && <LoadingSpinner />}
