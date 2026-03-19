@@ -1,12 +1,58 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../hooks/useAuth.js';
 import { useNav } from '../context/NavContext.jsx';
 import '../styles/Navbar.css';
 
 export function Navbar({ onSearch }) {
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const { setPage, toggleSidebar, updateSearchQuery } = useNav();
   const [searchInput, setSearchInput] = useState('');
+  const [avatarUrl, setAvatarUrl] = useState('../public/Ash.png'); // Por defecto Ash
+
+  // Actualizar avatar cuando cambie en localStorage
+  useEffect(() => {
+    const loadAvatar = () => {
+      try {
+        const savedProfile = localStorage.getItem('userProfile');
+        if (savedProfile) {
+          const profile = JSON.parse(savedProfile);
+          if (profile.avatar && profile.avatar !== '../public/Ash.png') {
+            setAvatarUrl(profile.avatar);
+          } else {
+            setAvatarUrl('../public/Ash.png');
+          }
+        } else {
+          setAvatarUrl('../public/Ash.png');
+        }
+      } catch (error) {
+        console.error('Error loading profile avatar:', error);
+        setAvatarUrl('../public/Ash.png');
+      }
+    };
+
+    // Cargar avatar inicial
+    loadAvatar();
+
+    // Escuchar cambios en localStorage (cuando se guarda perfil)
+    const handleStorageChange = (e) => {
+      if (e.key === 'userProfile') {
+        loadAvatar();
+      }
+    };
+
+    // Escuchar evento personalizado de actualización de perfil
+    const handleProfileUpdate = () => {
+      loadAvatar();
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('profileUpdated', handleProfileUpdate);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('profileUpdated', handleProfileUpdate);
+    };
+  }, []);
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
@@ -72,18 +118,27 @@ export function Navbar({ onSearch }) {
                 onClick={() => setPage('perfil')}
                 aria-label="Ir a mi perfil"
                 style={{
-                  backgroundImage: `url(${
-                    user?.avatar ||
-                    `https://ui-avatars.com/api/?name=${encodeURIComponent(
-                      user?.name || 'U'
-                    )}&background=EF5552&color=fff`
-                  })`,
+                  backgroundImage: `url(${avatarUrl})`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center'
                 }}
               >
-                {!user?.avatar && '👤'}
-              </button>
-              <button className="navbar-logout" type="button" onClick={logout}>
-                Logout
+                {/* Si la imagen falla, mostrar inicial */}
+                <img 
+                  src={avatarUrl}
+                  alt="Avatar"
+                  style={{ display: 'none' }}
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                    // Si falla la carga, mostrar inicial
+                    const button = e.target.closest('.user-avatar');
+                    if (button) {
+                      button.style.backgroundImage = `url(https://ui-avatars.com/api/?name=${encodeURIComponent(
+                        user?.name || 'U'
+                      )}&background=EF5552&color=fff)`;
+                    }
+                  }}
+                />
               </button>
             </div>
           ) : null}
