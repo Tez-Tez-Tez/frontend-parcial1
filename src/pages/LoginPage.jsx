@@ -189,7 +189,7 @@ export function LoginPage() {
           <button className="login-submit" type="submit" disabled={isLoading}>
             {isLoading
               ? (isRegistering ? 'Registrando…' : 'Iniciando…')
-              : (isRegistering ? 'Crear Cuenta' : 'Iniciar Sesión')}
+              : (isRegistering ? 'Crear e iniciar sesion' : 'Iniciar Sesión')}
           </button>
         </form>
 
