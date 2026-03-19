@@ -4,6 +4,7 @@ import { PokemonCard } from '../components/PokemonCard.jsx';
 import { LoadingSpinner } from '../components/LoadingSpinner.jsx';
 import { ErrorMessage } from '../components/ErrorMessage.jsx';
 import { useNav } from '../context/NavContext.jsx';
+import { SiteFooter } from '../components/SiteFooter.jsx';
 import '../styles/PokemonPage.css';
 
 export function PokemonPage() {
@@ -196,44 +197,7 @@ export function PokemonPage() {
         )}
       </main>
 
-      {/* ── MODAL DE DETALLE ── */}
-      {selected && (
-        <div
-          className="pokemon-modal-overlay"
-          onClick={(e) => { if (e.target === e.currentTarget) handleCloseModal(); }}
-          role="dialog"
-          aria-modal="true"
-          aria-label="Detalle del Pokémon"
-        >
-          <div className="pokemon-modal-container">
-            <button
-              className="pokemon-modal-close"
-              onClick={handleCloseModal}
-              aria-label="Cerrar"
-              type="button"
-            >
-              ✕
-            </button>
-
-            {detailLoading && (
-              <div className="pokemon-modal-loading">
-                <LoadingSpinner />
-                <p>Cargando datos...</p>
-              </div>
-            )}
-
-            {detailError && showError && (
-              <div className="pokemon-modal-error">
-                <ErrorMessage message={detailError} onDismiss={handleCloseModal} />
-              </div>
-            )}
-
-            {!detailLoading && !detailError && pokemon && (
-              <DetallePokemon pokemon={pokemon} />
-            )}
-          </div>
-        </div>
-      )}
+      <SiteFooter />
     </div>
   );
 }

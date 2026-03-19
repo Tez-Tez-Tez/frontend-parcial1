@@ -34,6 +34,7 @@ export function NavProvider({ children }) {
   const [activeGeneration, setActiveGeneration] = useState(null);
   const [activeType, setActiveType] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [sortBy, setSortBy] = useState('id-asc'); // Nuevo: ordenamiento
   const [favoritePokemon, setFavoritePokemon] = useState(() => readStoredList(FAVORITES_STORAGE_KEY));
   const [recentPokemon, setRecentPokemon] = useState(() => readStoredList(RECENT_STORAGE_KEY));
   const [selectedPokemon, setSelectedPokemon] = useState(null);
@@ -72,6 +73,11 @@ export function NavProvider({ children }) {
 
   const updateSearchQuery = (query) => {
     setSearchQuery(String(query || '').trim().toLowerCase());
+    setPage('home');
+  };
+
+  const updateSortBy = (sortOption) => {
+    setSortBy(String(sortOption || 'id-asc'));
     setPage('home');
   };
 
@@ -132,6 +138,7 @@ export function NavProvider({ children }) {
       activeGeneration,
       activeType,
       searchQuery,
+      sortBy,
       favoritePokemon,
       recentPokemon,
       selectedPokemon,
@@ -139,6 +146,7 @@ export function NavProvider({ children }) {
       selectGeneration,
       selectType,
       updateSearchQuery,
+      updateSortBy,
       toggleFavoritePokemon,
       addRecentPokemon,
       openPokemonDetail,
@@ -151,6 +159,7 @@ export function NavProvider({ children }) {
       activeGeneration,
       activeType,
       searchQuery,
+      sortBy,
       favoritePokemon,
       recentPokemon,
       selectedPokemon,

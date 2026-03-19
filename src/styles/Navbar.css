@@ -64,7 +64,8 @@
   background: #EF5552;
   border-radius: 8px;
   font-size: 20px;
-  color: white; /* Asumiendo que el emoji se ve bien, si es texto, blanco */
+  color: white;
+  /* Asumiendo que el emoji se ve bien, si es texto, blanco */
 }
 
 .header-center {
@@ -110,13 +111,13 @@
   position: relative;
 }
 
-.search-icon {
-  font-size: 1rem;
-  color: #94A3B8;
+.search-icon-svg {
   position: absolute;
-  left: 12px;
+  left: 14px;
   top: 50%;
   transform: translateY(-50%);
+  pointer-events: none;
+  flex-shrink: 0;
 }
 
 .search-input {
@@ -224,6 +225,7 @@
   .navbar {
     padding: 12px 16px;
   }
+
   .search-container {
     max-width: 100%;
   }

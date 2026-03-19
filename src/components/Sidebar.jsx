@@ -16,12 +16,18 @@ const types = [
   { id: 'electric', label: 'ELECTRICO', tone: 'electric' },
   { id: 'psychic', label: 'PSIQUICO', tone: 'psychic' },
   { id: 'ice', label: 'HIELO', tone: 'ice' },
-  { id: 'normal', label: 'NORMAL', tone: 'normal' },
-  { id: 'poison', label: 'VENENO', tone: 'poison' },
-  { id: 'fairy', label: 'HADA', tone: 'fairy' },
+  { id: 'dragon', label: 'DRAGON', tone: 'dragon' },
+  { id: 'ghost', label: 'FANTASMA', tone: 'ghost' },
+  { id: 'fighting', label: 'LUCHA', tone: 'fighting' },
+  { id: 'ground', label: 'TIERRA', tone: 'ground' },
   { id: 'rock', label: 'ROCA', tone: 'rock' },
+  { id: 'normal', label: 'NORMAL', tone: 'normal' },
   { id: 'flying', label: 'VOLADOR', tone: 'flying' },
   { id: 'bug', label: 'BICHO', tone: 'bug' },
+  { id: 'fairy', label: 'HADA', tone: 'fairy' },
+  { id: 'steel', label: 'ACERO', tone: 'steel' },
+  { id: 'dark', label: 'SINIESTRO', tone: 'dark' },
+  { id: 'poison', label: 'VENENO', tone: 'poison' },
 ];
 
 function SidebarIcon({ icon, active }) {
@@ -95,7 +101,7 @@ export default function Sidebar({ isOpen, onClose }) {
           </section>
 
           <section className="sb-group">
-            <p className="sb-heading">GENERAL</p>
+            <p className="sb-heading">GENERACION</p>
 
             <div className="sb-generation-grid">
               {generations.map((generation) => {
@@ -116,7 +122,7 @@ export default function Sidebar({ isOpen, onClose }) {
           </section>
 
           <section className="sb-group sb-group-types">
-            <p className="sb-heading">TIPS</p>
+            <p className="sb-heading">TIPOS</p>
 
             <div className="sb-type-list">
               {types.map((type) => {
