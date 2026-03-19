@@ -5,8 +5,10 @@ import { INITIAL_FAVORITES, DEFAULT_AVATAR } from '../utils/pokemonUtils'
 import { SearchModal, EditModal } from '../components/profile/ProfileModals'
 import { ProfileHeader, SidebarInterno, FavoritesSection, TrainerJourney } from '../components/profile/ProfileSections'
 import { useNav } from '../context/NavContext.jsx'
+import { useAuth } from '../hooks/useAuth.js'
 
 export default function PerfilPage() {
+  const { user } = useAuth()
   const { favoritePokemon: favoriteNames, toggleFavoritePokemon } = useNav()
   const [favoriteDetails, setFavoriteDetails] = useState([])
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -22,10 +24,10 @@ export default function PerfilPage() {
       try { return JSON.parse(saved); } catch (e) {}
     }
     return {
-      name: 'Ash Ketchum',
+      name: user?.name || 'Ash Ketchum',
       subtitle: 'Maestro Pokémon • Pueblo Paleta, Kanto',
-      avatar: DEFAULT_AVATAR,
-      bio: 'Soy Ash Ketchum, de Pueblo Paleta. Estoy viajando con mi compañero Pikachu para convertirme en el mejor Maestro Pokémon del mundo. Hemos viajado por Kanto, Johto, Hoenn y muchas otras regiones haciendo amigos y enfrentando desafíos difíciles. ¡No importa lo difícil que sea, nunca nos rendimos!',
+      avatar: user?.avatar || DEFAULT_AVATAR,
+      bio: `¡Hola! Soy ${user?.name || 'Ash Ketchum'}, de Pueblo Paleta. Estoy viajando con mi compañero Pikachu para convertirme en el mejor Maestro Pokémon del mundo. ¡No importa lo difícil que sea, nunca nos rendimos!`,
       regions: ['Kanto', 'Johto', 'Hoenn', 'Sinnoh', 'Teselia', 'Kalos', 'Alola', 'Galar']
     };
   })
@@ -41,7 +43,7 @@ export default function PerfilPage() {
           fetch(`https://pokeapi.co/api/v2/pokemon/${name}`).then(res => res.json())
         )
         const results = await Promise.all(promises)
-        
+
         const pokemonData = results.map(pokemon => ({
           id: pokemon.id,
           name: pokemon.name.charAt(0).toUpperCase() + pokemon.name.slice(1),
@@ -69,18 +71,18 @@ export default function PerfilPage() {
     try {
       const response = await fetch(`https://pokeapi.co/api/v2/pokemon?limit=1000`)
       const data = await response.json()
-      
+
       const filtered = data.results
         .filter(p => p.name.includes(term.toLowerCase()))
         .slice(0, 8)
-      
+
       const details = await Promise.all(
         filtered.map(async (p) => {
           const res = await fetch(p.url)
           return await res.json()
         })
       )
-      
+
       setSearchResults(details.map(d => ({
         id: d.id,
         name: d.name.charAt(0).toUpperCase() + d.name.slice(1),

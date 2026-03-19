@@ -58,6 +58,14 @@ export function SearchModal({
   );
 }
 
+const AVATAR_OPTIONS = [
+  { src: '/Ash.png', label: 'Ash' },
+  { src: '/Misty.png', label: 'Misty' },
+  { src: '/Brock.png', label: 'Brock' },
+  { src: '/Gary.png', label: 'Gary' },
+  { src: '/Dawn.png', label: 'Dawn' },
+]
+
 export function EditModal({ 
   showEditModal, setShowEditModal, editForm, setEditForm, 
   handleAvatarChange, handleSaveProfile 
@@ -73,17 +81,45 @@ export function EditModal({
         </div>
         
         <div className="pf-edit-form">
-          <div className="pf-edit-avatar">
-            <img src={editForm.avatar} alt="Avatar" />
-            <label className="pf-edit-avatar-btn">
-              Cambiar foto
-              <input 
-                type="file" 
-                accept="image/*" 
-                onChange={handleAvatarChange}
-                style={{ display: 'none' }}
-              />
-            </label>
+          <div className="pf-edit-avatar-section">
+            <div className="pf-edit-avatar-preview">
+              <img src={editForm.avatar} alt="Avatar" />
+            </div>
+
+            <div className="pf-avatar-options">
+              <h4>Seleccionar Avatar</h4>
+              <div className="pf-avatar-grid">
+                {AVATAR_OPTIONS.map((avatar) => (
+                  <button
+                    key={avatar.src}
+                    type="button"
+                    className={`pf-avatar-option ${editForm.avatar === avatar.src ? 'active' : ''}`}
+                    onClick={() => setEditForm({ ...editForm, avatar: avatar.src })}
+                    title={avatar.label}
+                  >
+                    <img src={avatar.src} alt={avatar.label} />
+                    <span>{avatar.label}</span>
+                  </button>
+                ))}
+              </div>
+
+              <div className="pf-custom-file-upload">
+                <label className="pf-edit-avatar-btn">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                    <polyline points="17 8 12 3 7 8" />
+                    <line x1="12" y1="3" x2="12" y2="15" />
+                  </svg>
+                  Cargar imagen personalizada
+                  <input 
+                    type="file" 
+                    accept="image/*" 
+                    onChange={handleAvatarChange}
+                    style={{ display: 'none' }}
+                  />
+                </label>
+              </div>
+            </div>
           </div>
 
           <div className="pf-edit-field">
@@ -92,6 +128,7 @@ export function EditModal({
               type="text" 
               value={editForm.name}
               onChange={(e) => setEditForm({...editForm, name: e.target.value})}
+              placeholder="Ingresa tu nombre"
             />
           </div>
 
@@ -101,6 +138,7 @@ export function EditModal({
               type="text" 
               value={editForm.subtitle}
               onChange={(e) => setEditForm({...editForm, subtitle: e.target.value})}
+              placeholder="Ej: Maestro Pokémon • Región"
             />
           </div>
 
@@ -110,6 +148,7 @@ export function EditModal({
               rows="4"
               value={editForm.bio}
               onChange={(e) => setEditForm({...editForm, bio: e.target.value})}
+              placeholder="Cuéntale a otros sobre ti..."
             />
           </div>
 
@@ -122,6 +161,7 @@ export function EditModal({
                 ...editForm, 
                 regions: e.target.value.split(',').map(r => r.trim()).filter(r => r)
               })}
+              placeholder="Kanto, Johto, Hoenn..."
             />
           </div>
 

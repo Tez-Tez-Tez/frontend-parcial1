@@ -17,7 +17,7 @@ export function PokemonCard({ pokemon, isFavorite = false, onToggleFavorite }) {
 
   const hp = pokemon.stats?.find((s) => s.name === 'HP')?.value;
   const atk = pokemon.stats?.find((s) => s.name === 'ATK')?.value;
-  const def = pokemon.stats?.find((s) => s.name === 'DEF')?.value;
+  const spd = pokemon.stats?.find((s) => s.name === 'SPD')?.value;
 
   return (
     <article className="pokemon-card" aria-label={pokemon.name}>
@@ -75,8 +75,8 @@ export function PokemonCard({ pokemon, isFavorite = false, onToggleFavorite }) {
           <span className="stat-value">{atk ?? '-'}</span>
         </div>
         <div className="stat">
-          <span className="stat-label">DEF</span>
-          <span className="stat-value">{def ?? '-'}</span>
+          <span className="stat-label">SPD</span>
+          <span className="stat-value">{spd ?? '-'}</span>
         </div>
       </div>
     </article>

@@ -34,8 +34,10 @@ export function NavProvider({ children }) {
   const [activeGeneration, setActiveGeneration] = useState(null);
   const [activeType, setActiveType] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [sortBy, setSortBy] = useState('id-asc'); // Nuevo: ordenamiento
   const [favoritePokemon, setFavoritePokemon] = useState(() => readStoredList(FAVORITES_STORAGE_KEY));
   const [recentPokemon, setRecentPokemon] = useState(() => readStoredList(RECENT_STORAGE_KEY));
+  const [selectedPokemon, setSelectedPokemon] = useState(null);
 
   const toggleSidebar = () => {
     setIsSidebarOpen((currentValue) => !currentValue);
@@ -77,6 +79,11 @@ export function NavProvider({ children }) {
     setPage('home');
   };
 
+  const updateSortBy = (sortOption) => {
+    setSortBy(String(sortOption || 'id-asc'));
+    setPage('home');
+  };
+
   const toggleFavoritePokemon = (pokemonName) => {
     if (!pokemonName) {
       return;
@@ -107,6 +114,22 @@ export function NavProvider({ children }) {
     });
   };
 
+  const openPokemonDetail = (pokemonName) => {
+    if (!pokemonName) {
+      return;
+    }
+
+    const normalizedName = String(pokemonName).toLowerCase();
+    setSelectedPokemon(normalizedName);
+    addRecentPokemon(normalizedName);
+    setPage('detail');
+  };
+
+  const closePokemonDetail = () => {
+    setSelectedPokemon(null);
+    setPage('home');
+  };
+
   const value = useMemo(
     () => ({
       page,
@@ -119,14 +142,19 @@ export function NavProvider({ children }) {
       activeType,
       searchQuery,
       setSearchQuery,
+      sortBy,
       favoritePokemon,
       recentPokemon,
+      selectedPokemon,
       selectNavigation,
       selectGeneration,
       selectType,
       updateSearchQuery,
+      updateSortBy,
       toggleFavoritePokemon,
       addRecentPokemon,
+      openPokemonDetail,
+      closePokemonDetail,
     }),
     [
       page,
@@ -135,8 +163,10 @@ export function NavProvider({ children }) {
       activeGeneration,
       activeType,
       searchQuery,
+      sortBy,
       favoritePokemon,
       recentPokemon,
+      selectedPokemon,
     ]
   );
 

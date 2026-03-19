@@ -11,7 +11,7 @@ export function Navbar({ onSearch }) {
   useEffect(() => {
     setSearchInput(searchQuery);
   }, [searchQuery]);
-  const [avatarUrl, setAvatarUrl] = useState('../public/Ash.png'); // Por defecto Ash
+  const [avatarUrl, setAvatarUrl] = useState('/Ash.png'); // Por defecto Ash
 
   // Actualizar avatar cuando cambie en localStorage
   useEffect(() => {
@@ -20,17 +20,17 @@ export function Navbar({ onSearch }) {
         const savedProfile = localStorage.getItem('userProfile');
         if (savedProfile) {
           const profile = JSON.parse(savedProfile);
-          if (profile.avatar && profile.avatar !== '../public/Ash.png') {
+          if (profile.avatar && profile.avatar !== '/Ash.png') {
             setAvatarUrl(profile.avatar);
           } else {
-            setAvatarUrl('../public/Ash.png');
+            setAvatarUrl('/Ash.png');
           }
         } else {
-          setAvatarUrl('../public/Ash.png');
+          setAvatarUrl('/Ash.png');
         }
       } catch (error) {
         console.error('Error loading profile avatar:', error);
-        setAvatarUrl('../public/Ash.png');
+        setAvatarUrl('/Ash.png');
       }
     };
 
