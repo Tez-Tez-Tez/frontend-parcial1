@@ -71,43 +71,40 @@ export function Navbar({ onSearch }) {
     <header className="navbar">
       <div className="header-content">
         <div className="header-left">
-          <button className="hamburger" onClick={toggleSidebar} aria-label="Menú">
-            <span></span>
-            <span></span>
-            <span></span>
-          </button>
           <button
             className="header-logo-group"
             onClick={() => setPage('home')}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
           >
-            <div className="logo-box">📋</div>
-            <div className="logo">PokéSPA</div>
+            <div className="logo-box">
+              <div className="logo-icon-container">
+                <div className="logo-icon"></div>
+              </div>
+            </div>
+            <div className="logo-text-container">
+              <h2 className="logo">PokéSPA</h2>
+            </div>
           </button>
         </div>
 
         <div className="header-center">
           <form className="search-container" onSubmit={handleSearchSubmit}>
-            <span className="search-icon">🔍</span>
-            <input
-              type="text"
-              className="search-input"
-              placeholder="Busca pokémon, movimientos, habilidad..."
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-            />
+            <div className="search-icon-container">
+              <div className="search-icon"></div>
+            </div>
+            <div className="search-input-container">
+              <input
+                type="text"
+                className="search-input"
+                placeholder="Busca pokemon, movimientos, habili..."
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+              />
+            </div>
           </form>
         </div>
 
         <div className="header-right">
-          <button
-            className="navbar-help"
-            type="button"
-            aria-label="Ayuda"
-            onClick={() => window.alert('Ayuda: inicia sesión para continuar.')}
-          >
-            ?
-          </button>
+
 
           {isAuthenticated ? (
             <div className="navbar-user">
@@ -118,9 +115,7 @@ export function Navbar({ onSearch }) {
                 onClick={() => setPage('perfil')}
                 aria-label="Ir a mi perfil"
                 style={{
-                  backgroundImage: `url(${avatarUrl})`,
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center'
+                  backgroundImage: `url(${avatarUrl})`
                 }}
               >
                 {/* Si la imagen falla, mostrar inicial */}
