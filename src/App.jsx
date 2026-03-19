@@ -1,7 +1,7 @@
 import { AuthProvider } from './context/AuthContext.jsx'
 import { NavProvider, useNav } from './context/NavContext.jsx'
 import { Navbar } from './components/Navbar.jsx'
-import Sidebar from './components/Sidebar.jsx'
+
 import { PokemonPage } from './pages/PokemonPage.jsx'
 import { LoginPage } from './pages/LoginPage.jsx'
 import PerfilPage from './pages/PerfilPage.jsx'
@@ -18,7 +18,6 @@ function AppContent() {
   return (
     <div className="app">
       {showNavbar && <Navbar />}
-      {isAuthenticated && <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} />}
       
       <main className={`app-main ${!showNavbar ? 'no-navbar' : ''}`}>
         {!isAuthenticated ? (

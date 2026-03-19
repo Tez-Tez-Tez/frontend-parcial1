@@ -40,12 +40,18 @@ export default function PerfilPage() {
   const [searching, setSearching] = useState(false)
   
   // Estado del perfil
-  const [profile, setProfile] = useState({
-    name: 'Ash Ketchum',
-    subtitle: 'Maestro Pokémon • Pueblo Paleta, Kanto',
-    avatar: DEFAULT_AVATAR,
-    bio: 'Soy Ash Ketchum, de Pueblo Paleta. Estoy viajando con mi compañero Pikachu para convertirme en el mejor Maestro Pokémon del mundo. Hemos viajado por Kanto, Johto, Hoenn y muchas otras regiones haciendo amigos y enfrentando desafíos difíciles. ¡No importa lo difícil que sea, nunca nos rendimos!',
-    regions: ['Kanto', 'Johto', 'Hoenn', 'Sinnoh', 'Teselia', 'Kalos', 'Alola', 'Galar']
+  const [profile, setProfile] = useState(() => {
+    const saved = localStorage.getItem('userProfile');
+    if (saved) {
+      try { return JSON.parse(saved); } catch (e) {}
+    }
+    return {
+      name: 'Ash Ketchum',
+      subtitle: 'Maestro Pokémon • Pueblo Paleta, Kanto',
+      avatar: DEFAULT_AVATAR,
+      bio: 'Soy Ash Ketchum, de Pueblo Paleta. Estoy viajando con mi compañero Pikachu para convertirme en el mejor Maestro Pokémon del mundo. Hemos viajado por Kanto, Johto, Hoenn y muchas otras regiones haciendo amigos y enfrentando desafíos difíciles. ¡No importa lo difícil que sea, nunca nos rendimos!',
+      regions: ['Kanto', 'Johto', 'Hoenn', 'Sinnoh', 'Teselia', 'Kalos', 'Alola', 'Galar']
+    };
   })
 
   // Estado para el modal de edición
@@ -55,7 +61,6 @@ export default function PerfilPage() {
   // Cargar datos desde localStorage al iniciar
   useEffect(() => {
     loadFavorites()
-    loadProfile()
   }, [])
 
   const loadFavorites = async () => {
@@ -88,29 +93,12 @@ export default function PerfilPage() {
     }
   }
 
-  const loadProfile = () => {
-    const savedProfile = localStorage.getItem('userProfile')
-    if (savedProfile) {
-      setProfile(JSON.parse(savedProfile))
-    }
-  }
-
-  // Guardar perfil en localStorage
-  const saveProfile = () => {
-    localStorage.setItem('userProfile', JSON.stringify(profile))
-  }
-
   // Guardar favoritos en localStorage
   useEffect(() => {
     if (favoritePokemon.length > 0) {
       localStorage.setItem('pokemonFavorites', JSON.stringify(favoritePokemon))
     }
   }, [favoritePokemon])
-
-  // Guardar perfil cuando cambie
-  useEffect(() => {
-    saveProfile()
-  }, [profile])
 
   // Buscar Pokémon
   const searchPokemon = async (term) => {
@@ -190,7 +178,9 @@ export default function PerfilPage() {
   // Guardar cambios del perfil
   const handleSaveProfile = () => {
     setProfile(editForm)
+    localStorage.setItem('userProfile', JSON.stringify(editForm))
     setShowEditModal(false)
+    window.dispatchEvent(new Event('profileUpdated'))
   }
 
   // Obtener clase CSS y texto en español para el tipo

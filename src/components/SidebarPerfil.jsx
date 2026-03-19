@@ -40,16 +40,13 @@ export default function Sidebar({ isOpen, onClose }) {
           <div className="sb-top">
 
             {/* Logo — PokeSPA en negro según Figma */}
-            <div className="sb-logo">
-              <div className="sb-logo-icon">
-                <svg width="20" height="16" viewBox="0 0 20 16" fill="white">
-                  <rect x="0" y="0" width="8" height="7" rx="1"/>
-                  <rect x="12" y="0" width="8" height="7" rx="1"/>
-                  <rect x="0" y="9" width="8" height="7" rx="1"/>
-                  <rect x="12" y="9" width="8" height="7" rx="1"/>
-                </svg>
+            <div className="sb-logo" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <div className="logo-box" style={{ transform: 'scale(0.8)', transformOrigin: 'center' }}>
+                <div className="logo-icon-container">
+                  <div className="logo-icon"></div>
+                </div>
               </div>
-              <span className="sb-logo-text">PokeSPA</span>
+              <span className="sb-logo-text" style={{ margin: 0 }}>PokéSPA</span>
             </div>
 
             {/* Nav */}
@@ -76,7 +73,7 @@ export default function Sidebar({ isOpen, onClose }) {
               </a>
 
               {/* Configuración */}
-              <a className="sb-link" href="/configuracion" onClick={onClose}>
+              <a className="sb-link" >
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
                   stroke="#475569" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                   <circle cx="12" cy="12" r="3"/>
