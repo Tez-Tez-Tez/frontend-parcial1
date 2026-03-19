@@ -5,6 +5,7 @@
   flex-direction: column;
   min-height: 100vh;
   width: 100%;
+  background: transparent;
 }
 
 .main-content {
@@ -157,41 +158,46 @@
 /* Responsive Design */
 @media (max-width: 1024px) {
   .pokemon-grid {
-      grid-template-columns: repeat(2, 1fr);
-      gap: 24px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
   }
+
   .main-content {
-      padding: 24px 24px;
+    padding: 24px 24px;
   }
 }
 
 @media (max-width: 768px) {
   .pokemon-grid {
-      grid-template-columns: repeat(1, 1fr);
-      gap: 16px;
+    grid-template-columns: repeat(1, 1fr);
+    gap: 16px;
   }
+
   .main-content {
-      padding: 16px 16px;
+    padding: 16px 16px;
   }
+
   .pagination-bar {
-      gap: 6px;
-      flex-wrap: wrap;
+    gap: 6px;
+    flex-wrap: wrap;
   }
 }
 
 @media (max-width: 480px) {
   .main-header h1 {
-      font-size: 24px;
-      line-height: 32px;
+    font-size: 24px;
+    line-height: 32px;
   }
+
   .main-header {
-      flex-direction: column;
+    flex-direction: column;
     align-items: center;
-      gap: 16px;
+    gap: 16px;
   }
+
   .filter-btn {
     position: static;
     transform: none;
-      width: 100%;
+    width: 100%;
   }
 }

@@ -38,7 +38,7 @@ export default function PerfilPage() {
   const [searchTerm, setSearchTerm] = useState('')
   const [searchResults, setSearchResults] = useState([])
   const [searching, setSearching] = useState(false)
-  
+
   // Estado del perfil
   const [profile, setProfile] = useState({
     name: 'Ash Ketchum',
@@ -62,22 +62,22 @@ export default function PerfilPage() {
     setLoading(true)
     try {
       const savedFavorites = localStorage.getItem('pokemonFavorites')
-      
+
       if (savedFavorites) {
         setFavoritePokemon(JSON.parse(savedFavorites))
       } else {
-        const promises = INITIAL_FAVORITES.map(id => 
+        const promises = INITIAL_FAVORITES.map(id =>
           fetch(`https://pokeapi.co/api/v2/pokemon/${id}`).then(res => res.json())
         )
         const results = await Promise.all(promises)
-        
+
         const pokemonData = results.map(pokemon => ({
           id: pokemon.id,
           name: pokemon.name.charAt(0).toUpperCase() + pokemon.name.slice(1),
           image: pokemon.sprites.other['official-artwork'].front_default,
           types: pokemon.types.map(t => t.type.name)
         }))
-        
+
         setFavoritePokemon(pokemonData)
         localStorage.setItem('pokemonFavorites', JSON.stringify(pokemonData))
       }
@@ -123,18 +123,18 @@ export default function PerfilPage() {
     try {
       const response = await fetch(`https://pokeapi.co/api/v2/pokemon?limit=1000`)
       const data = await response.json()
-      
+
       const filtered = data.results
         .filter(p => p.name.includes(term.toLowerCase()))
         .slice(0, 8)
-      
+
       const details = await Promise.all(
         filtered.map(async (p) => {
           const res = await fetch(p.url)
           return await res.json()
         })
       )
-      
+
       setSearchResults(details.map(d => ({
         id: d.id,
         name: d.name.charAt(0).toUpperCase() + d.name.slice(1),
@@ -154,7 +154,7 @@ export default function PerfilPage() {
       alert('¡Este Pokémon ya está en favoritos!')
       return
     }
-    
+
     setFavoritePokemon([...favoritePokemon, pokemon])
     setShowSearch(false)
     setSearchTerm('')
@@ -175,7 +175,16 @@ export default function PerfilPage() {
     }
   }
 
-  // Manejar cambio de avatar
+  // Opciones de avatar predefinidas
+  const AVATAR_OPTIONS = [
+    { src: '/Ash.png', label: 'Ash' },
+    { src: '/Misty.png', label: 'Misty' },
+    { src: '/Brock.png', label: 'Brock' },
+    { src: '/Gary.png', label: 'Gary' },
+    { src: '/Dawn.png', label: 'Dawn' },
+  ]
+
+  // Manejar cambio de avatar por archivo
   const handleAvatarChange = (e) => {
     const file = e.target.files[0]
     if (file) {
@@ -190,6 +199,8 @@ export default function PerfilPage() {
   // Guardar cambios del perfil
   const handleSaveProfile = () => {
     setProfile(editForm)
+    localStorage.setItem('userProfile', JSON.stringify(editForm))
+    window.dispatchEvent(new Event('profileUpdated'))
     setShowEditModal(false)
   }
 
@@ -230,7 +241,7 @@ export default function PerfilPage() {
               <h3>Añadir Pokémon a Favoritos</h3>
               <button className="pf-modal-close" onClick={() => setShowSearch(false)}>×</button>
             </div>
-            
+
             <div className="pf-modal-search">
               <input
                 type="text"
@@ -246,12 +257,12 @@ export default function PerfilPage() {
 
             <div className="pf-modal-results">
               {searching && <div className="pf-search-loading">Buscando...</div>}
-              
+
               {!searching && searchResults.map(pokemon => {
                 const typeInfo = getTypeInfo(pokemon.types[0])
                 return (
-                  <div 
-                    key={pokemon.id} 
+                  <div
+                    key={pokemon.id}
                     className="pf-search-result"
                     onClick={() => addToFavorites(pokemon)}
                   >
@@ -285,57 +296,89 @@ export default function PerfilPage() {
               <h3>Editar Perfil</h3>
               <button className="pf-modal-close" onClick={() => setShowEditModal(false)}>×</button>
             </div>
-            
+
             <div className="pf-edit-form">
-              <div className="pf-edit-avatar">
-                <img src={editForm.avatar} alt="Avatar" />
-                <label className="pf-edit-avatar-btn">
-                  Cambiar foto
-                  <input 
-                    type="file" 
-                    accept="image/*" 
-                    onChange={handleAvatarChange}
-                    style={{ display: 'none' }}
-                  />
-                </label>
+              <div className="pf-edit-avatar-section">
+                <div className="pf-edit-avatar-preview">
+                  <img src={editForm.avatar} alt="Avatar" />
+                </div>
+
+                <div className="pf-avatar-options">
+                  <h4>Seleccionar Avatar</h4>
+                  <div className="pf-avatar-grid">
+                    {AVATAR_OPTIONS.map((avatar) => (
+                      <button
+                        key={avatar.src}
+                        type="button"
+                        className={`pf-avatar-option ${editForm.avatar === avatar.src ? 'active' : ''}`}
+                        onClick={() => setEditForm({ ...editForm, avatar: avatar.src })}
+                        title={avatar.label}
+                      >
+                        <img src={avatar.src} alt={avatar.label} />
+                        <span>{avatar.label}</span>
+                      </button>
+                    ))}
+                  </div>
+
+                  <div className="pf-custom-file-upload">
+                    <label className="pf-edit-avatar-btn">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                        <polyline points="17 8 12 3 7 8" />
+                        <line x1="12" y1="3" x2="12" y2="15" />
+                      </svg>
+                      Cargar imagen personalizada
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleAvatarChange}
+                        style={{ display: 'none' }}
+                      />
+                    </label>
+                  </div>
+                </div>
               </div>
 
               <div className="pf-edit-field">
                 <label>Nombre</label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   value={editForm.name}
-                  onChange={(e) => setEditForm({...editForm, name: e.target.value})}
+                  onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                  placeholder="Ingresa tu nombre"
                 />
               </div>
 
               <div className="pf-edit-field">
                 <label>Título / Subtítulo</label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   value={editForm.subtitle}
-                  onChange={(e) => setEditForm({...editForm, subtitle: e.target.value})}
+                  onChange={(e) => setEditForm({ ...editForm, subtitle: e.target.value })}
+                  placeholder="Ej: Maestro Pokémon • Región"
                 />
               </div>
 
               <div className="pf-edit-field">
                 <label>Biografía</label>
-                <textarea 
+                <textarea
                   rows="4"
                   value={editForm.bio}
-                  onChange={(e) => setEditForm({...editForm, bio: e.target.value})}
+                  onChange={(e) => setEditForm({ ...editForm, bio: e.target.value })}
+                  placeholder="Cuéntale a otros sobre ti..."
                 />
               </div>
 
               <div className="pf-edit-field">
                 <label>Regiones (separadas por coma)</label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   value={editForm.regions.join(', ')}
                   onChange={(e) => setEditForm({
-                    ...editForm, 
+                    ...editForm,
                     regions: e.target.value.split(',').map(r => r.trim()).filter(r => r)
                   })}
+                  placeholder="Kanto, Johto, Hoenn..."
                 />
               </div>
 
@@ -378,18 +421,18 @@ export default function PerfilPage() {
               </div>
               <div className="pf-header-actions">
                 <button className="pf-btn-editar" onClick={() => {
-                  setEditForm({...profile})
+                  setEditForm({ ...profile })
                   setShowEditModal(true)
                 }}>
                   Editar Perfil
                 </button>
                 <button className="pf-btn-share">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#475569" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="18" cy="5" r="3"/>
-                    <circle cx="6" cy="12" r="3"/>
-                    <circle cx="18" cy="19" r="3"/>
-                    <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
-                    <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+                    <circle cx="18" cy="5" r="3" />
+                    <circle cx="6" cy="12" r="3" />
+                    <circle cx="18" cy="19" r="3" />
+                    <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+                    <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
                   </svg>
                 </button>
               </div>
@@ -407,10 +450,10 @@ export default function PerfilPage() {
             <div className="pf-side-row" onClick={() => setShowSearch(true)}>
               <div className="pf-side-icon" style={{ background: '#DCFCE7' }}>
                 <svg width="20" height="16" viewBox="0 0 20 16" fill="#16A34A">
-                  <rect x="0" y="0" width="8" height="7" rx="1"/>
-                  <rect x="12" y="0" width="8" height="7" rx="1"/>
-                  <rect x="0" y="9" width="8" height="7" rx="1"/>
-                  <rect x="12" y="9" width="8" height="7" rx="1"/>
+                  <rect x="0" y="0" width="8" height="7" rx="1" />
+                  <rect x="12" y="0" width="8" height="7" rx="1" />
+                  <rect x="0" y="9" width="8" height="7" rx="1" />
+                  <rect x="12" y="9" width="8" height="7" rx="1" />
                 </svg>
               </div>
               <div>
@@ -419,13 +462,13 @@ export default function PerfilPage() {
               </div>
             </div>
 
-          
+
 
             <div className="pf-side-row pf-side-border">
               <div className="pf-side-icon" style={{ background: '#DBEAFE' }}>
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2">
-                  <circle cx="12" cy="8" r="6"/>
-                  <path d="M8.21 13.89L7 23l5-3 5 3-1.21-9.12"/>
+                  <circle cx="12" cy="8" r="6" />
+                  <path d="M8.21 13.89L7 23l5-3 5 3-1.21-9.12" />
                 </svg>
               </div>
               <div>
@@ -437,10 +480,10 @@ export default function PerfilPage() {
             <div className="pf-side-row pf-side-border">
               <div className="pf-side-icon" style={{ background: '#F3E8FF' }}>
                 <svg width="22" height="16" viewBox="0 0 24 24" fill="none" stroke="#9333EA" strokeWidth="2">
-                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-                  <circle cx="9" cy="7" r="4"/>
-                  <line x1="19" y1="8" x2="19" y2="14"/>
-                  <line x1="22" y1="11" x2="16" y2="11"/>
+                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                  <circle cx="9" cy="7" r="4" />
+                  <line x1="19" y1="8" x2="19" y2="14" />
+                  <line x1="22" y1="11" x2="16" y2="11" />
                 </svg>
               </div>
               <div>
@@ -458,7 +501,7 @@ export default function PerfilPage() {
               <div className="pf-fav-header">
                 <span className="pf-fav-title">
                   <svg width="20" height="19" viewBox="0 0 24 22" fill="#EF5552">
-                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
                   </svg>
                   Mis Favoritos
                 </span>
@@ -471,7 +514,7 @@ export default function PerfilPage() {
                 <div className="pf-grid">
                   {favoritePokemon.map(pokemon => (
                     <div key={pokemon.id} className="pf-mon-card" style={{ position: 'relative' }}>
-                      <button 
+                      <button
                         className="pf-remove-btn"
                         onClick={(e) => removeFromFavorites(pokemon.id, e)}
                       >
@@ -511,7 +554,7 @@ export default function PerfilPage() {
                         <div className="pf-mon-bottom">
                           <span className="pf-mon-owner">{profile.subtitle}</span>
                           <svg width="17" height="16" viewBox="0 0 24 22" fill="#EF5552">
-                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
                           </svg>
                         </div>
                       </div>
@@ -519,15 +562,15 @@ export default function PerfilPage() {
                   ))}
 
                   {/* Tarjeta Añadir */}
-                  <div 
+                  <div
                     className="pf-mon-card pf-mon-add-card"
                     onClick={() => setShowSearch(true)}
                   >
                     <div className="pf-add-circle">
                       <svg width="14" height="14" viewBox="0 0 14 14" fill="none"
                         stroke="#EF5552" strokeWidth="2" strokeLinecap="round">
-                        <line x1="7" y1="1" x2="7" y2="13"/>
-                        <line x1="1" y1="7" x2="13" y2="7"/>
+                        <line x1="7" y1="1" x2="7" y2="13" />
+                        <line x1="1" y1="7" x2="13" y2="7" />
                       </svg>
                     </div>
                     <p className="pf-add-text">Añadir Favorito</p>
@@ -540,7 +583,7 @@ export default function PerfilPage() {
             <div className="pf-viaje-section">
               <div className="pf-viaje-title-row">
                 <svg width="22" height="20" viewBox="0 0 24 22" fill="#EF5552">
-                  <path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z"/>
+                  <path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z" />
                 </svg>
                 <h2 className="pf-viaje-title">Viaje del Entrenador</h2>
               </div>
