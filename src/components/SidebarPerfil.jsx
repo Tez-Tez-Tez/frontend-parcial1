@@ -42,9 +42,11 @@ export default function Sidebar({ isOpen, onClose }) {
             {/* Logo — PokeSPA en negro según Figma */}
             <div className="sb-logo" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <div className="logo-box" style={{ transform: 'scale(0.8)', transformOrigin: 'center' }}>
-                <div className="logo-icon-container">
-                  <div className="logo-icon"></div>
-                </div>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="12" cy="12" r="10" stroke="white" strokeWidth="2" />
+                  <line x1="2" y1="12" x2="22" y2="12" stroke="white" strokeWidth="2" />
+                  <circle cx="12" cy="12" r="3" fill="white" />
+                </svg>
               </div>
               <span className="sb-logo-text" style={{ margin: 0 }}>PokéSPA</span>
             </div>
